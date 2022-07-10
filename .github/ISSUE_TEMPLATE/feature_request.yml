@@ -1,0 +1,89 @@
+# THIS FILE IS GENERATED! DO NOT EDIT! Maintained by Terraform.
+name: "💡 Submit a feature request"
+description: Suggest an awesome feature for this project!
+title: "feature: [REPLACE ME]"
+labels:
+  - enhancement
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ### Thanks for submitting a feature request! 📋
+
+        - 💬 Make sure to check out the [**discussions**](../discussions) section of this repository. Do you have an idea for an improvement, but want to brainstorm it with others first? [Start a discussion here](../discussions/new?category=ideas) first.
+        - 🔎 Please [**search**](../labels/enhancement) to see if someone else has submitted a similar feature request, before making a new request.
+
+        ---------------------------------------------
+  - type: textarea
+    id: describe
+    attributes:
+      label: "✨ Describe the feature you'd like"
+      description: >-
+        A clear and concise description of what you want to happen, or what
+        feature you'd like added.
+      placeholder: 'Example: "It would be cool if X had support for Y"'
+    validations:
+      required: true
+  - type: textarea
+    id: related
+    attributes:
+      label: "🌧 Is your feature request related to a problem?"
+      description: >-
+        A clear and concise description of what the problem is.
+      placeholder: >-
+        Example: "I'd like to see X feature added, as I frequently have to do Y,
+        and I think Z would solve that problem"
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: "🔎 Describe alternatives you've considered"
+      description: >-
+        A clear and concise description of any alternative solutions or features
+        you've considered.
+      placeholder: >-
+        Example: "I've considered X and Y, however the potential problems with
+        those solutions would be [...]"
+    validations:
+      required: true
+  - type: dropdown
+    id: breaking
+    attributes:
+      label: "⚠ If implemented, do you think this feature will be a breaking change to users?"
+      description: >-
+        To the best of your ability, do you think implementing this change
+        would impact users in a way during an upgrade process?
+      options:
+        - "Yes"
+        - "No"
+        - "Not sure"
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: "⚙ Additional context"
+      description: >-
+        Add any other context or screenshots about the feature request here
+        (attach if necessary).
+      placeholder: "Examples: logs, screenshots, etc"
+  - type: checkboxes
+    id: requirements
+    attributes:
+      label: "🤝 Requirements"
+      description: "Please confirm the following:"
+      options:
+        - label: >-
+            I have confirmed that someone else has not
+            [submitted a similar feature request](../labels/enhancement).
+          required: true
+        - label: >-
+            If implemented, I believe this feature will help others, in
+            addition to solving my problems.
+          required: true
+        - label: I have looked into alternative solutions to the best of my ability.
+          required: true
+        - label: >-
+            (optional) I would be willing to contribute to testing this
+            feature if implemented, or making a PR to implement this
+            functionality.
+          required: false
