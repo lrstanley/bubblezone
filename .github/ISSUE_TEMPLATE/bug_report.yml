@@ -1,0 +1,95 @@
+# THIS FILE IS GENERATED! DO NOT EDIT! Maintained by Terraform.
+name: "🐞 Submit a bug report"
+description: Create a report to help us improve!
+title: "bug: [REPLACE ME]"
+labels:
+  - bug
+body:
+  - type: markdown
+    attributes:
+      value: |
+        ### Thanks for submitting a bug report to **bubblezone**! 📋
+
+        - 💬 Make sure to check out the [**discussions**](../discussions) section. If your issue isn't a bug (or you're not sure), and you're looking for help to solve it, please [start a discussion here](../discussions/new?category=q-a) first.
+        - 🔎 Please [**search**](../labels/bug) to see if someone else has submitted a similar bug report, before making a new report.
+
+        ----------------------------------------
+  - type: textarea
+    id: description
+    attributes:
+      label: "🌧 Describe the problem"
+      description: A clear and concise description of what the problem is.
+      placeholder: 'Example: "When I attempted to do X, I got X error"'
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: "⛅ Expected behavior"
+      description: A clear and concise description of what you expected to happen.
+      placeholder: 'Example: "I expected X to let me add Y component, and be successful"'
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: "🔄 Minimal reproduction"
+      description: >-
+        Steps to reproduce the behavior (including code examples and/or
+        configuration files if necessary)
+      placeholder: >-
+        Example: "1. Click on '....' | 2. Run command with flags --foo --bar,
+        etc | 3. See error"
+  - type: input
+    id: version
+    attributes:
+      label: "💠 Version: bubblezone"
+      description: What version of bubblezone is being used?
+      placeholder: 'Examples: "v1.2.3, master branch, commit 1a2b3c"'
+    validations:
+      required: true
+  - type: dropdown
+    id: os
+    attributes:
+      label: "🖥 Version: Operating system"
+      description: >-
+        What operating system did this issue occur on (if other, specify in
+        "Additional context" section)?
+      options:
+        - linux/ubuntu
+        - linux/debian
+        - linux/centos
+        - linux/alpine
+        - linux/other
+        - windows/10
+        - windows/11
+        - windows/other
+        - macos
+        - other
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: "⚙ Additional context"
+      description: >-
+        Add any other context about the problem here. This includes things
+        like logs, screenshots, code examples, what was the state when the
+        bug occurred?
+      placeholder: >
+        Examples: "logs, code snippets, screenshots, os/browser version info,
+        etc"
+  - type: checkboxes
+    id: requirements
+    attributes:
+      label: "🤝 Requirements"
+      description: "Please confirm the following:"
+      options:
+        - label: >-
+            I believe the problem I'm facing is a bug, and is not intended
+            behavior. [Post here if you're not sure](../discussions/new?category=q-a).
+          required: true
+        - label: >-
+            I have confirmed that someone else has not
+            [submitted a similar bug report](../labels/bug).
+          required: true
