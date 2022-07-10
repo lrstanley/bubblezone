@@ -1,4 +1,4 @@
-![](https://liam.sh/-/gh/svg/lrstanley/bubblezone?bg=topography&accent=rocket&layout=left&test=1)
+![](https://liam.sh/-/gh/svg/lrstanley/bubblezone?bg=topography&accent=rocket&layout=left)
 
 <!-- template:begin:header -->
 <!-- do not edit anything in this "template" block, its auto-generated -->
