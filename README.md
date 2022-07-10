@@ -2,7 +2,7 @@
 
 <!-- template:begin:header -->
 <!-- do not edit anything in this "template" block, its auto-generated -->
-<p align="center">bubblezone -- bubblezone is a helper utility for bubbletea, for calculating location of mouse events in components</p>
+<p align="center">bubblezone -- helper utility for bubbletea, allowing component click tracking</p>
 <p align="center">
   <a href="https://github.com/lrstanley/bubblezone/tags">
     <img title="Latest Semver Tag" src="https://img.shields.io/github/v/tag/lrstanley/bubblezone?style=flat-square">
