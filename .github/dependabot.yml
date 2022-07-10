@@ -1,0 +1,20 @@
+# THIS FILE IS GENERATED! DO NOT EDIT! Maintained by Terraform.
+#
+# See GitHub's docs for more information on this file:
+# https://docs.github.com/en/free-pro-team@latest/github/administering-a-repository/configuration-options-for-dependency-updates
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+      timezone: "America/New_York"
+      day: "monday"
+      time: "12:00"
+  - package-ecosystem: gomod
+    directory: "/"
+    schedule:
+      interval: weekly
+      timezone: "America/New_York"
+      day: "monday"
+      time: "12:10"
