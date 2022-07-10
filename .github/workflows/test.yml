@@ -1,0 +1,19 @@
+name: test
+
+on:
+  pull_request:
+    branches: [master]
+    paths-ignore: [".gitignore", "**/*.md", ".github/ISSUE_TEMPLATE/**"]
+    types: [opened, edited, reopened, synchronize, unlocked]
+  push:
+    branches: [master]
+    paths-ignore: [".gitignore", "**/*.md", ".github/ISSUE_TEMPLATE/**"]
+
+jobs:
+  go-test:
+    uses: lrstanley/.github/.github/workflows/lang-go-test-matrix.yml@master
+    with: { num-minor: 2, num-patch: 2 }
+  go-lint:
+    uses: lrstanley/.github/.github/workflows/lang-go-lint.yml@master
+    secrets:
+      SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}

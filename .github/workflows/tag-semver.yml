@@ -1,0 +1,33 @@
+name: tag-semver
+
+on:
+  workflow_dispatch:
+    inputs:
+      method:
+        description: "Tagging method to use"
+        required: true
+        type: choice
+        options: [major, minor, patch, alpha, rc, custom]
+      custom:
+        description: "Custom tag, if the default doesn't suffice. Must also use method 'custom'."
+        required: false
+        type: string
+      ref:
+        description: "Git ref to apply tag to (will use default branch if unspecified)."
+        required: false
+        type: string
+      annotation:
+        description: "Optional annotation to add to the commit."
+        required: false
+        type: string
+
+jobs:
+  tag-semver:
+    uses: lrstanley/.github/.github/workflows/tag-semver.yml@master
+    with:
+      method: ${{ github.event.inputs.method }}
+      ref: ${{ github.event.inputs.ref }}
+      custom: ${{ github.event.inputs.custom }}
+      annotation: ${{ github.event.inputs.annotation }}
+    secrets:
+      token: ${{ secrets.USER_PAT }}
