@@ -13,7 +13,7 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	NewGlobal(500)
+	NewGlobal()
 
 	testsScan = []scanTestCase{
 		{"empty", "", "", nil},
@@ -27,23 +27,32 @@ func TestMain(m *testing.M) {
 		{"lipgloss-basic-end", testStyle.Render("testing") + "a", testStyle.Render("testing") + "a", nil},
 		{"lipgloss-basic-start-end", "a" + testStyle.Render("testing") + "a", "a" + testStyle.Render("testing") + "a", nil},
 		{"lipgloss-basic-between", testStyle.Render("testing") + "a" + testStyle.Render("testing"), testStyle.Render("testing") + "a" + testStyle.Render("testing"), nil},
-		{"id-empty", Mark("testing", ""), "", []string{"testing"}},
-		{"id-single-start", "a" + Mark("testing", "a"), "aa", []string{"testing"}},
-		{"id-single-end", Mark("testing", "a") + "a", "aa", []string{"testing"}},
-		{"id-single-start-end", "a" + Mark("testing", "b") + "a", "aba", []string{"testing"}},
-		{"id-single-between", Mark("testing", "b") + "a" + Mark("testing", "b"), "bab", []string{"testing"}},
-		{"id-with-lipgloss-start", testStyle.Render(Mark("testing", "testing") + "testing"), testStyle.Render("testingtesting"), []string{"testing"}},
-		{"id-with-lipgloss-end", testStyle.Render("testing" + Mark("testing", "testing")), testStyle.Render("testingtesting"), []string{"testing"}},
-		{"id-multi-empty", Mark("foo", "") + Mark("bar", ""), "", []string{"foo", "bar"}},
-		{"id-multi-start", "a" + Mark("foo", "") + Mark("bar", ""), "a", []string{"foo", "bar"}},
-		{"id-multi-end", Mark("foo", "") + Mark("bar", "") + "a", "a", []string{"foo", "bar"}},
-		{"id-multi-start-end", "a" + Mark("foo", "") + Mark("bar", "") + "a", "aa", []string{"foo", "bar"}},
-		{"long-x1", "a" + Mark("longtest", longStyle.Render("testing")) + "a", "a" + longStyle.Render("testing") + "a", []string{"longtest"}},
+		{"id-empty", Mark("testing1", ""), "", nil},
+		{"id-single-start", "a" + Mark("testing2", "a"), "aa", []string{"testing2"}},
+		{"id-single-end", Mark("testing3", "a") + "a", "aa", []string{"testing3"}},
+		{"id-single-start-end", "a" + Mark("testing4", "b") + "a", "aba", []string{"testing4"}},
+		{"id-single-between", Mark("testing5", "b") + "a" + Mark("testing6", "b"), "bab", []string{"testing5", "testing6"}},
+		{"id-with-lipgloss-start", testStyle.Render(Mark("testing7", "testing") + "testing"), testStyle.Render("testingtesting"), []string{"testing7"}},
+		{"id-with-lipgloss-end", testStyle.Render("testing" + Mark("testing8", "testing")), testStyle.Render("testingtesting"), []string{"testing8"}},
+		{"id-multi-empty", Mark("foo1", "") + Mark("bar1", ""), "", nil},
+		{"id-multi-start", "a" + Mark("foo2", "b") + Mark("bar2", "c"), "abc", []string{"foo2", "bar2"}},
+		{"id-multi-end", Mark("foo3", "a") + Mark("bar3", "b") + "c", "abc", []string{"foo3", "bar3"}},
+		{"id-multi-start-end", "a" + Mark("foo4", "b") + Mark("bar4", "c") + "d", "abcd", []string{"foo4", "bar4"}},
+		{"inception", Mark("foo", Mark("bar", "b")), "b", []string{"foo", "bar"}},
+		{"long-x1", "a" + Mark("longtest5", longStyle.Render("testing")) + "a", "a" + longStyle.Render("testing") + "a", []string{"longtest5"}},
 		{"long-x2", strings.Repeat("a"+Mark("longtest", longStyle.Render("testing"))+"a", 1), strings.Repeat("a"+longStyle.Render("testing")+"a", 1), []string{"longtest"}},
 		{"long-x4", strings.Repeat("a"+Mark("longtest", longStyle.Render("testing"))+"a", 4), strings.Repeat("a"+longStyle.Render("testing")+"a", 4), []string{"longtest"}},
 		{"long-x6", strings.Repeat("a"+Mark("longtest", longStyle.Render("testing"))+"a", 6), strings.Repeat("a"+longStyle.Render("testing")+"a", 6), []string{"longtest"}},
 		{"long-x8", strings.Repeat("a"+Mark("longtest", longStyle.Render("testing"))+"a", 8), strings.Repeat("a"+longStyle.Render("testing")+"a", 8), []string{"longtest"}},
 		{"long-x10", strings.Repeat("a"+Mark("longtest", longStyle.Render("testing"))+"a", 10), strings.Repeat("a"+longStyle.Render("testing")+"a", 10), []string{"longtest"}},
+		{"invalid-no-bracket", "a\x1B12345Zb", "a\x1B12345Zb", nil},
+		{"invalid-no-bracket-end", "a\x1B", "a\x1B", nil},
+		{"invalid-no-numbers", "a\x1BZb", "a\x1BZb", nil},
+		{"invalid-no-numbers-end", "a\x1BZ", "a\x1BZ", nil},
+		{"invalid-marker-end", "a\x1B12345b", "a\x1B12345b", nil},
+		{"invalid-marker-end-2", "a\x1B12345", "a\x1B12345", nil},
+		{"invalid-run-of-numbers", "a\x1B12345b6Z", "a\x1B12345b6Z", nil},
+		{"invalid-misc", "\x1Ba\x1B\x1B\x1B12345b6Z\x1B", "\x1Ba\x1B\x1B\x1B12345b6Z\x1B", nil},
 	}
 
 	m.Run()
@@ -119,6 +128,21 @@ func FuzzScan(f *testing.F) {
 	})
 }
 
+func TestMark(t *testing.T) {
+	var out string
+	for _, test := range testsScan[0:10] {
+		got := Mark(test.name, test.in)
+		out += got
+	}
+
+	_ = Scan(out)
+	time.Sleep(100 * time.Millisecond)
+
+	for _, test := range testsScan[0:10] {
+		_ = Get(test.name)
+	}
+}
+
 func BenchmarkMark(b *testing.B) {
 	for _, test := range testsScan {
 		b.Run(test.name, func(b *testing.B) {
@@ -127,4 +151,38 @@ func BenchmarkMark(b *testing.B) {
 			}
 		})
 	}
+}
+
+func TestWorkerClear(t *testing.T) {
+	_ = Scan("a" + Mark("foo", "b") + "c")
+	_ = Scan("a" + Mark("bar", "b") + "c")
+	time.Sleep(100 * time.Millisecond)
+
+	if xy := Get("foo"); !xy.IsZero() {
+		t.Errorf("%#v not cleared (after %#v)", xy, Get("bar"))
+	}
+}
+
+func TestClear(t *testing.T) {
+	_ = Scan("a" + Mark("foo", "b") + "c")
+	Clear("foo")
+	if xy := Get("foo"); !xy.IsZero() {
+		t.Errorf("%#v not cleared", xy)
+	}
+}
+
+func TestClose(t *testing.T) {
+	mgr := New()
+	mgr.Close()
+	time.Sleep(100 * time.Millisecond)
+	_ = mgr.Scan("a" + Mark("foo", "b") + "c")
+	time.Sleep(100 * time.Millisecond)
+	if xy := mgr.Get("foo"); !xy.IsZero() {
+		t.Errorf("%#v fetched, but closed", xy)
+	}
+}
+
+func TestGlobalInitialize(t *testing.T) {
+	NewGlobal()
+	NewGlobal()
 }
