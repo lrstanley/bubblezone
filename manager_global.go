@@ -11,12 +11,12 @@ var DefaultManager *Manager
 // between all components. This is primarily only useful if you have full control
 // of the zones you want to monitor, however if developing a library using this,
 // make sure you allow users to pass in their own manager.
-func NewGlobal(startCounterAt int) {
+func NewGlobal() {
 	if DefaultManager != nil {
 		return
 	}
 
-	DefaultManager = New(startCounterAt)
+	DefaultManager = New()
 }
 
 // Close stops the manager worker.

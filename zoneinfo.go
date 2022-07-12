@@ -6,61 +6,58 @@ package zone
 
 import tea "github.com/charmbracelet/bubbletea"
 
-// Position is a struct that holds the X and Y coordinates of an zone (start and
-// end).
-type Position struct {
-	id string // raw id of the offset.
-	X  int    // X coordinate, starting from 0 (width).
-	Y  int    // Y coordinate, starting from 0 (height).
-}
-
-// IsZero returns true if the position doesn't reference an offset. Useful when
-// calling Get() using an ID that hasn't been registered yet.
-func (p *Position) IsZero() bool {
-	if p == nil {
-		return true
-	}
-	return p.id == ""
-}
-
+// ZoneInfo holds information about the start and end positions of a zone.
 type ZoneInfo struct {
-	Start *Position
-	End   *Position
+	id        string // rid of the zone.
+	iteration int    // The iteration of the zone, used for cleaning up old zones.
+
+	StartX int // StartX is the x coordinate of the top left cell of the zone (with 0 basis).
+	StartY int // StartY is the y coordinate of the top left cell of the zone (with 0 basis).
+
+	EndX int // EndX is the x coordinate of the bottom right cell of the zone (with 0 basis).
+	EndY int // EndY is the y coordinate of the bottom right cell of the zone (with 0 basis).
 }
 
+// IsZero returns true if the zone isn't known yet (is nil).
 func (z *ZoneInfo) IsZero() bool {
 	if z == nil {
 		return true
 	}
-	return z.Start.IsZero() || z.End.IsZero()
+	return z.id == ""
 }
 
+// InBounds returns true if the mouse event was in the bounds of the zones
+// coordinates. If the zone is not known, it returns false. It calculates this
+// using a box between the start and end coordinates. If you're looking to check
+// for abnormal shapes (e.g. something that might wrap a line, but can't be
+// determined using a box), you'll likely have to implement this yourself.
 func (z *ZoneInfo) InBounds(e tea.MouseMsg) bool {
 	if z.IsZero() {
 		return false
 	}
 
-	if z.Start.X > z.End.X || z.Start.Y > z.End.Y {
+	if z.StartX > z.EndX || z.StartY > z.EndY {
 		return false
 	}
 
-	if e.X < z.Start.X || e.Y < z.Start.Y {
+	if e.X < z.StartX || e.Y < z.StartY {
 		return false
 	}
 
-	if e.X >= z.End.X || e.Y > z.End.Y {
+	if e.X > z.EndX || e.Y > z.EndY {
 		return false
 	}
 
 	return true
 }
 
-// Offset returns the X and Y offset from the top left of the window, starting at
-// 0, 0. Returns -1, -1 if the zone isn't known yet.
-func (z *ZoneInfo) Offset(msg tea.MouseMsg) (x, y int) {
-	if z.IsZero() {
+// Pos returns the coordinates of the mouse event relative to the zone, with a
+// basis of (0, 0) being the top left cell of the zone. If the zone is not known,
+// or the mouse event is not in the bounds of the zone, this will return (-1, -1).
+func (z *ZoneInfo) Pos(msg tea.MouseMsg) (x, y int) {
+	if z.IsZero() || !z.InBounds(msg) {
 		return -1, -1
 	}
 
-	return msg.X - z.Start.X, msg.Y - z.Start.Y
+	return msg.X - z.StartX, msg.Y - z.StartY
 }
