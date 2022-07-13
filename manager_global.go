@@ -4,6 +4,8 @@
 
 package zone
 
+import tea "github.com/charmbracelet/bubbletea"
+
 // DefaultManager is a app-wide manager. To initialize it, call NewGlobal().
 var DefaultManager *Manager
 
@@ -59,4 +61,9 @@ func Get(id string) (a *ZoneInfo) {
 func Scan(v string) string {
 	DefaultManager.checkInitialized()
 	return DefaultManager.Scan(v)
+}
+
+func AnyInBounds(model tea.Model, mouse tea.MouseMsg) {
+	DefaultManager.checkInitialized()
+	DefaultManager.AnyInBounds(model, mouse)
 }

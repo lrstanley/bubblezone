@@ -31,7 +31,7 @@ func New() (m *Manager) {
 	}
 
 	m.ctx, m.cancel = context.WithCancel(context.Background())
-	go m.worker()
+	go m.zoneWorker()
 
 	return m
 }
@@ -43,8 +43,8 @@ type Manager struct {
 	cancel  func()
 	setChan chan *ZoneInfo
 
-	mapMu sync.RWMutex
-	zones map[string]*ZoneInfo
+	zoneMu sync.RWMutex
+	zones  map[string]*ZoneInfo
 
 	idMu sync.RWMutex
 	ids  map[string]string // user ID -> generated control sequence ID.
@@ -90,17 +90,17 @@ func (m *Manager) Mark(id, v string) string {
 
 // Clear removes any stored zones for the given ID.
 func (m *Manager) Clear(id string) {
-	m.mapMu.Lock()
+	m.zoneMu.Lock()
 	delete(m.zones, id)
-	m.mapMu.Unlock()
+	m.zoneMu.Unlock()
 }
 
 // Get returns the zone info of the given ID. If the ID is not known (yet),
 // Get() returns nil.
 func (m *Manager) Get(id string) (zone *ZoneInfo) {
-	m.mapMu.RLock()
+	m.zoneMu.RLock()
 	zone = m.zones[id]
-	m.mapMu.RUnlock()
+	m.zoneMu.RUnlock()
 	return zone
 }
 
@@ -113,13 +113,13 @@ func (m *Manager) getReverse(id string) (resolved string) {
 	return resolved
 }
 
-func (m *Manager) worker() {
+func (m *Manager) zoneWorker() {
 	for {
 		select {
 		case <-m.ctx.Done():
 			return
 		case xy := <-m.setChan:
-			m.mapMu.Lock()
+			m.zoneMu.Lock()
 			if xy.id != "" {
 				m.zones[m.getReverse(xy.id)] = xy
 			} else {
@@ -130,7 +130,7 @@ func (m *Manager) worker() {
 					}
 				}
 			}
-			m.mapMu.Unlock()
+			m.zoneMu.Unlock()
 		}
 	}
 }
