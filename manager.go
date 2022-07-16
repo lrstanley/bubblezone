@@ -20,7 +20,10 @@ const (
 	identEnd     = 'Z' // escape terminator.
 )
 
-var counter int64 = 1000 // Protected by atomic operations.
+var (
+	markerCounter int64 = 1000 // Protected by atomic operations.
+	prefixCounter int64 = 0    // Protected by atomic operations.
+)
 
 func New() (m *Manager) {
 	m = &Manager{
@@ -62,6 +65,45 @@ func (m *Manager) Close() {
 	m.cancel()
 }
 
+// NewPrefix generates a zone marker ID prefix, which can help prevent overlapping
+// zone markers between multiple components. Each call to NewPrefix() returns a
+// new unique prefix.
+//
+// Usage example:
+//	func NewModel() tea.Model {
+//		return &model{
+//			id: zone.NewPrefix(),
+//		}
+//	}
+//
+//	type model struct {
+//		id     string
+//		active int
+//		items  []string
+//	}
+//
+//	func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+//		switch msg := msg.(type) {
+//		// [...]
+//		case tea.MouseMsg:
+//			// [...]
+//			for i, item := range m.items {
+//				if zone.Get(m.id + item.name).InBounds(msg) {
+//					m.active = i
+//					break
+//				}
+//			}
+//		}
+//		return m, nil
+//	}
+//
+//	func (m model) View() string {
+//		return zone.Mark(m.id+"some-other-id", "rendered stuff here")
+//	}
+func (m *Manager) NewPrefix() string {
+	return "zone_" + strconv.FormatInt(atomic.AddInt64(&prefixCounter, 1), 10) + "__"
+}
+
 // Mark returns v wrapped with a start and end ANSI sequence to allow the zone
 // manager to determine where the zone is, including its window offsets. The ANSI
 // sequences used should be ignored by lipgloss width methods, to prevent incorrect
@@ -80,7 +122,7 @@ func (m *Manager) Mark(id, v string) string {
 	}
 
 	m.idMu.Lock()
-	gid = string(identStart) + string(identBracket) + strconv.FormatInt(atomic.AddInt64(&counter, 1), 10) + string(identEnd)
+	gid = string(identStart) + string(identBracket) + strconv.FormatInt(atomic.AddInt64(&markerCounter, 1), 10) + string(identEnd)
 	m.ids[id] = gid
 	m.rids[gid] = id
 	m.idMu.Unlock()

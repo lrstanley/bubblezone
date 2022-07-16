@@ -63,7 +63,53 @@ func Scan(v string) string {
 	return DefaultManager.Scan(v)
 }
 
+// AnyInBounds sends a MsgZoneInBounds message to the provided model for each zone
+// that is in the bounds of the provided mouse event. The results of the call to
+// Update() are discarded.
+//
+// Note that if multiple zones are within bounds, each one will be sent as an event
+// in alphabetical sorted order of the ID.
 func AnyInBounds(model tea.Model, mouse tea.MouseMsg) {
 	DefaultManager.checkInitialized()
 	DefaultManager.AnyInBounds(model, mouse)
+}
+
+// NewPrefix generates a zone marker ID prefix, which can help prevent overlapping
+// zone markers between multiple components. Each call to NewPrefix() returns a
+// new unique prefix.
+//
+// Usage example:
+//	func NewModel() tea.Model {
+//		return &model{
+//			id: zone.NewPrefix(),
+//		}
+//	}
+//
+//	type model struct {
+//		id     string
+//		active int
+//		items  []string
+//	}
+//
+//	func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+//		switch msg := msg.(type) {
+//		// [...]
+//		case tea.MouseMsg:
+//			// [...]
+//			for i, item := range m.items {
+//				if zone.Get(m.id + item.name).InBounds(msg) {
+//					m.active = i
+//					break
+//				}
+//			}
+//		}
+//		return m, nil
+//	}
+//
+//	func (m model) View() string {
+//		return zone.Mark(m.id+"some-other-id", "rendered stuff here")
+//	}
+func NewPrefix() string {
+	DefaultManager.checkInitialized()
+	return DefaultManager.NewPrefix()
 }

@@ -16,7 +16,6 @@
     <img title="Last commit" src="https://img.shields.io/github/last-commit/lrstanley/bubblezone?style=flat-square">
   </a>
 
-
   <a href="https://github.com/lrstanley/bubblezone/actions?query=workflow%3Atest+event%3Apush">
     <img title="GitHub Workflow Status (test @ master)" src="https://img.shields.io/github/workflow/status/lrstanley/bubblezone/test/master?label=test&style=flat-square&event=push">
   </a>
@@ -53,15 +52,23 @@
 <!-- do not edit anything in this "template" block, its auto-generated -->
 ## :link: Table of Contents
 
-  - [Problem](#x-problem)
-  - [Solution](#heavy_check_mark-solution)
-  - [Features](#sparkles-features)
-  - [Usage](#gear-usage)
-  - [Examples](#clap-examples)
-    - [List example](#list-example)
-  - [Support &amp; Assistance](#raising_hand_man-support--assistance)
-  - [Contributing](#handshake-contributing)
-  - [License](#balance_scale-license)
+- [:link: Table of Contents](#link-table-of-contents)
+- [:x: Problem](#x-problem)
+- [:heavy_check_mark: Solution](#heavy_check_mark-solution)
+- [:sparkles: Features](#sparkles-features)
+- [:gear: Usage](#gear-usage)
+- [:clap: Examples](#clap-examples)
+  - [List example](#list-example)
+  - [Lipgloss full example](#lipgloss-full-example)
+- [Tips](#tips)
+  - [Overlapping markers](#overlapping-markers)
+  - [Use lipgloss.Width](#use-lipglosswidth)
+  - [MaxHeight and MaxWidth](#maxheight-and-maxwidth)
+  - [Only scan at the root model](#only-scan-at-the-root-model)
+  - [Organic shapes](#organic-shapes)
+- [:raising_hand_man: Support & Assistance](#raising_hand_man-support--assistance)
+- [:handshake: Contributing](#handshake-contributing)
+- [:balance_scale: License](#balance_scale-license)
 <!-- template:end:toc -->
 
 ## :x: Problem
@@ -116,11 +123,17 @@ where the mouse was being clicked, and which component was under the mouse:
 <!-- template:begin:goget -->
 <!-- do not edit anything in this "template" block, its auto-generated -->
 ```console
-$ go get -u github.com/lrstanley/bubblezone@latest
+go get -u github.com/lrstanley/bubblezone@latest
 ```
 <!-- template:end:goget -->
 
+BubbleZone supports either a global zone manager (initialized via `NewGlobal()`),
+or non-global (via `New()`). Using the global zone manager, simply use `zone.<method>`.
+The below examples will use the global manager.
+
 TODO
+
+---
 
 ## :clap: Examples
 
@@ -131,30 +144,87 @@ TODO
 
 ![list-default example](https://ls-screen.s3.us-west-004.backblazeb2.com/2022/07/WindowsTerminal_SelC1Vzdas.gif)
 
+### Lipgloss full example
+
+- All items are marked as a unique zone (uses `NewPrefix()` as well).
+- Child models are used, and the resulting mouse events are passed down to each
+  model.
+- [Example source](./examples/full-lipgloss).
+
+![full-lipgloss example](https://ls-screen.s3.us-west-004.backblazeb2.com/2022/07/WindowsTerminal_tirP0rGZ2z.gif)
+
+---
+
+## Tips
+
+Below are a couple of tips to ensure you have the best experience using BubbleZone.
+
+### Overlapping markers
+
+To prevent overlapping marker ID's in child components, use `NewPrefix()` which
+will generate a guaranteed-unique prefix you can use in combination with your
+regular IDs.
+
+### Use lipgloss.Width
+
+Use `lipgloss.Width()` for width measurements, rather than `len()` or similar.
+BubbleZone has been specifically designed so that markers will be ignored by
+`lipgloss.Width()` (in addition to this being the recommended width checking
+method even if you're not using BubbleZone, as `len()` breaks with fg/bg colors,
+and other control characters).
+
+### MaxHeight and MaxWidth
+
+`MaxHeight()` and `MaxWidth()` do a hard-trim of characters to enforce a specific
+height and width. As such, if a child component is wrapped in a zone, and overlaps
+the maximum height/width, the zone will break and standard bounds checks
+**will not work**. Do to this, it is recommended to ensure `MaxHeight` and
+`MaxWidth()` are only enforcing limits that should already be set by normal
+height/width limits on your components (i.e. just don't exceed the max viewport
+dimensions 😅).
+
+### Only scan at the root model
+
+Make sure `zone.Scan()` is only used at the root level model, it will likely not
+work as you intend it in any other situation.
+
+### Organic shapes
+
+BubbleZones `InBounds()` checks calculate bounds based off a box region. For
+example, if you have a model that generates a large circle, make sure the zone
+is properly padded (e.g. `lipgloss.Place()` or similar), to capture the entire
+circle. Though note that because it checks for the entire box, a mouse event
+will still be considered in bounds if the outer corners outside of the circle
+are clicked.
+
+Example:
+
+![bounding box](https://ls-screen.s3.us-west-004.backblazeb2.com/2022/07/dX0UX8smCD.png)
+
 ---
 
 <!-- template:begin:support -->
 <!-- do not edit anything in this "template" block, its auto-generated -->
 ## :raising_hand_man: Support & Assistance
 
-   * :heart: Please review the [Code of Conduct](.github/CODE_OF_CONDUCT.md) for
+- :heart: Please review the [Code of Conduct](.github/CODE_OF_CONDUCT.md) for
      guidelines on ensuring everyone has the best experience interacting with
      the community.
-   * :raising_hand_man: Take a look at the [support](.github/SUPPORT.md) document on
+- :raising_hand_man: Take a look at the [support](.github/SUPPORT.md) document on
      guidelines for tips on how to ask the right questions.
-   * :lady_beetle: For all features/bugs/issues/questions/etc, [head over here](https://github.com/lrstanley/bubblezone/issues/new/choose).
+- :lady_beetle: For all features/bugs/issues/questions/etc, [head over here](https://github.com/lrstanley/bubblezone/issues/new/choose).
 <!-- template:end:support -->
 
 <!-- template:begin:contributing -->
 <!-- do not edit anything in this "template" block, its auto-generated -->
 ## :handshake: Contributing
 
-   * :heart: Please review the [Code of Conduct](.github/CODE_OF_CONDUCT.md) for guidelines
+- :heart: Please review the [Code of Conduct](.github/CODE_OF_CONDUCT.md) for guidelines
      on ensuring everyone has the best experience interacting with the
-	   community.
-   * :clipboard: Please review the [contributing](.github/CONTRIBUTING.md) doc for submitting
+    community.
+- :clipboard: Please review the [contributing](.github/CONTRIBUTING.md) doc for submitting
      issues/a guide on submitting pull requests and helping out.
-   * :old_key: For anything security related, please review this repositories [security policy](https://github.com/lrstanley/bubblezone/security/policy).
+- :old_key: For anything security related, please review this repositories [security policy](https://github.com/lrstanley/bubblezone/security/policy).
 <!-- template:end:contributing -->
 
 <!-- template:begin:license -->
