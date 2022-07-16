@@ -16,7 +16,6 @@
     <img title="Last commit" src="https://img.shields.io/github/last-commit/lrstanley/bubblezone?style=flat-square">
   </a>
 
-
   <a href="https://github.com/lrstanley/bubblezone/actions?query=workflow%3Atest+event%3Apush">
     <img title="GitHub Workflow Status (test @ master)" src="https://img.shields.io/github/workflow/status/lrstanley/bubblezone/test/master?label=test&style=flat-square&event=push">
   </a>
@@ -53,22 +52,22 @@
 <!-- do not edit anything in this "template" block, its auto-generated -->
 ## :link: Table of Contents
 
-  - [Problem](#x-problem)
-  - [Solution](#heavy_check_mark-solution)
-  - [Features](#sparkles-features)
-  - [Usage](#gear-usage)
-  - [Examples](#clap-examples)
-    - [List example](#list-example)
-    - [Lipgloss full example](#lipgloss-full-example)
-  - [Tips](#memo-tips)
-    - [Overlapping markers](#overlapping-markers)
-    - [Use lipgloss.Width](#use-lipglosswidth)
-    - [MaxHeight and MaxWidth](#maxheight-and-maxwidth)
-    - [Only scan at the root model](#only-scan-at-the-root-model)
-    - [Organic shapes](#organic-shapes)
-  - [Support &amp; Assistance](#raising_hand_man-support--assistance)
-  - [Contributing](#handshake-contributing)
-  - [License](#balance_scale-license)
+- [Problem](#x-problem)
+- [Solution](#heavy_check_mark-solution)
+- [Features](#sparkles-features)
+- [Usage](#gear-usage)
+- [Examples](#clap-examples)
+  - [List example](#list-example)
+  - [Lipgloss full example](#lipgloss-full-example)
+- [Tips](#memo-tips)
+  - [Overlapping markers](#overlapping-markers)
+  - [Use lipgloss.Width](#use-lipglosswidth)
+  - [MaxHeight and MaxWidth](#maxheight-and-maxwidth)
+  - [Only scan at the root model](#only-scan-at-the-root-model)
+  - [Organic shapes](#organic-shapes)
+- [Support &amp; Assistance](#raising_hand_man-support--assistance)
+- [Contributing](#handshake-contributing)
+- [License](#balance_scale-license)
 <!-- template:end:toc -->
 
 ## :x: Problem
@@ -123,7 +122,7 @@ where the mouse was being clicked, and which component was under the mouse:
 <!-- template:begin:goget -->
 <!-- do not edit anything in this "template" block, its auto-generated -->
 ```console
-$ go get -u github.com/lrstanley/bubblezone@latest
+go get -u github.com/lrstanley/bubblezone@latest
 ```
 <!-- template:end:goget -->
 
@@ -131,7 +130,86 @@ BubbleZone supports either a global zone manager (initialized via `NewGlobal()`)
 or non-global (via `New()`). Using the global zone manager, simply use `zone.<method>`.
 The below examples will use the global manager.
 
-TODO
+Initialize the zone manager:
+
+```go
+package main
+
+import (
+    // [...]
+    zone "github.com/lrstanley/bubblezone"
+)
+
+
+func main() {
+    // [...]
+    zone.NewGlobal()
+    // If the UI will be closed at some point and the application will still run,
+    // use zone.Close() to stop all background workers:
+    // defer zone.Close()
+    //
+    // [...]
+    //
+    // Initialize your application here.
+}
+```
+
+In your root model, wrap your `View()` output in `zone.Scan()`, which will register
+and monitor all zones, including stripping the ANSI sequences injected by `zone.Mark()`.
+
+```go
+func (r app) View() string {
+    // [...]
+    return zone.Scan(r.someStyle.Render(generatedChildViews))
+}
+```
+
+In your children models `View()` method, use `zone.Mark()` to wrap the area you want
+to mark as a zone. Make sure you give the zone a unique ID (see also: [tips: overlapping markers](#overlapping-markers)):
+
+```go
+func (m model) View() string {
+    // [...]
+    buttons := lipgloss.JoinHorizontal(
+        lipgloss.Top,
+        zone.Mark("confirm", okButton),
+        zone.Mark("cancel", cancelButton),
+    )
+    return m.someStyle.Render(buttons)
+}
+```
+
+In your children models `Update()` method, use `zone.Get(<id>).InBounds(mouseMsg)` to
+check if the mouse event was in the bounds of the zone:
+
+```go
+func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+    switch msg := msg.(type) {
+    // [...]
+    case tea.MouseMsg:
+        if msg.Type != tea.MouseLeft {
+            return m, nil
+        }
+
+        if zone.Get("confirm").InBounds(msg) {
+            // Do something if it's in bounds, e.g. toggling a model flag to let
+            // View() know to change its highlight colors.
+            m.active = "confirm"
+        } else if zone.Get("cancel").InBounds(msg) {
+            m.active = "cancel"
+        }
+
+        // x, y := zone.Get("confirm").Pos() can be used to get the relative
+        // coordinates within the zone. Useful if you need to move a cursor in a
+        // input box as an example.
+
+        return m, nil
+    }
+    return m, nil
+}
+```
+
+... and that's it!
 
 ---
 
@@ -207,24 +285,24 @@ Example:
 <!-- do not edit anything in this "template" block, its auto-generated -->
 ## :raising_hand_man: Support & Assistance
 
-   * :heart: Please review the [Code of Conduct](.github/CODE_OF_CONDUCT.md) for
+- :heart: Please review the [Code of Conduct](.github/CODE_OF_CONDUCT.md) for
      guidelines on ensuring everyone has the best experience interacting with
      the community.
-   * :raising_hand_man: Take a look at the [support](.github/SUPPORT.md) document on
+- :raising_hand_man: Take a look at the [support](.github/SUPPORT.md) document on
      guidelines for tips on how to ask the right questions.
-   * :lady_beetle: For all features/bugs/issues/questions/etc, [head over here](https://github.com/lrstanley/bubblezone/issues/new/choose).
+- :lady_beetle: For all features/bugs/issues/questions/etc, [head over here](https://github.com/lrstanley/bubblezone/issues/new/choose).
 <!-- template:end:support -->
 
 <!-- template:begin:contributing -->
 <!-- do not edit anything in this "template" block, its auto-generated -->
 ## :handshake: Contributing
 
-   * :heart: Please review the [Code of Conduct](.github/CODE_OF_CONDUCT.md) for guidelines
+- :heart: Please review the [Code of Conduct](.github/CODE_OF_CONDUCT.md) for guidelines
      on ensuring everyone has the best experience interacting with the
-	   community.
-   * :clipboard: Please review the [contributing](.github/CONTRIBUTING.md) doc for submitting
+    community.
+- :clipboard: Please review the [contributing](.github/CONTRIBUTING.md) doc for submitting
      issues/a guide on submitting pull requests and helping out.
-   * :old_key: For anything security related, please review this repositories [security policy](https://github.com/lrstanley/bubblezone/security/policy).
+- :old_key: For anything security related, please review this repositories [security policy](https://github.com/lrstanley/bubblezone/security/policy).
 <!-- template:end:contributing -->
 
 <!-- template:begin:license -->
