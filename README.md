@@ -137,21 +137,21 @@ Initialize the zone manager:
 package main
 
 import (
-    // [...]
-    zone "github.com/lrstanley/bubblezone"
+	// [...]
+	zone "github.com/lrstanley/bubblezone"
 )
 
 
 func main() {
-    // [...]
-    zone.NewGlobal()
-    // If the UI will be closed at some point and the application will still run,
-    // use zone.Close() to stop all background workers:
-    // defer zone.Close()
-    //
-    // [...]
-    //
-    // Initialize your application here.
+	// [...]
+	zone.NewGlobal()
+	// If the UI will be closed at some point and the application will still run,
+	// use zone.Close() to stop all background workers:
+	// defer zone.Close()
+	//
+	// [...]
+	//
+	// Initialize your application here.
 }
 ```
 
@@ -160,8 +160,8 @@ and monitor all zones, including stripping the ANSI sequences injected by `zone.
 
 ```go
 func (r app) View() string {
-    // [...]
-    return zone.Scan(r.someStyle.Render(generatedChildViews))
+	// [...]
+	return zone.Scan(r.someStyle.Render(generatedChildViews))
 }
 ```
 
@@ -170,13 +170,13 @@ to mark as a zone. Make sure you give the zone a unique ID (see also: [tips: ove
 
 ```go
 func (m model) View() string {
-    // [...]
-    buttons := lipgloss.JoinHorizontal(
-        lipgloss.Top,
-        zone.Mark("confirm", okButton),
-        zone.Mark("cancel", cancelButton),
-    )
-    return m.someStyle.Render(buttons)
+	// [...]
+	buttons := lipgloss.JoinHorizontal(
+		lipgloss.Top,
+		zone.Mark("confirm", okButton),
+		zone.Mark("cancel", cancelButton),
+	)
+	return m.someStyle.Render(buttons)
 }
 ```
 
@@ -185,28 +185,28 @@ check if the mouse event was in the bounds of the zone:
 
 ```go
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-    switch msg := msg.(type) {
-    // [...]
-    case tea.MouseMsg:
-        if msg.Type != tea.MouseLeft {
-            return m, nil
-        }
+	switch msg := msg.(type) {
+	// [...]
+	case tea.MouseMsg:
+		if msg.Type != tea.MouseLeft {
+			return m, nil
+		}
 
-        if zone.Get("confirm").InBounds(msg) {
-            // Do something if it's in bounds, e.g. toggling a model flag to let
-            // View() know to change its highlight colors.
-            m.active = "confirm"
-        } else if zone.Get("cancel").InBounds(msg) {
-            m.active = "cancel"
-        }
+		if zone.Get("confirm").InBounds(msg) {
+			// Do something if it's in bounds, e.g. toggling a model flag to let
+			// View() know to change its highlight colors.
+			m.active = "confirm"
+		} else if zone.Get("cancel").InBounds(msg) {
+			m.active = "cancel"
+		}
 
-        // x, y := zone.Get("confirm").Pos() can be used to get the relative
-        // coordinates within the zone. Useful if you need to move a cursor in a
-        // input box as an example.
+		// x, y := zone.Get("confirm").Pos() can be used to get the relative
+		// coordinates within the zone. Useful if you need to move a cursor in a
+		// input box as an example.
 
-        return m, nil
-    }
-    return m, nil
+		return m, nil
+	}
+	return m, nil
 }
 ```
 
