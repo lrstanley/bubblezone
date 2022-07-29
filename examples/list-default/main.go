@@ -28,7 +28,7 @@ type item struct {
 
 func (i item) Title() string       { return zone.Mark(i.id, i.title) }
 func (i item) Description() string { return i.desc }
-func (i item) FilterValue() string { return i.title }
+func (i item) FilterValue() string { return zone.Mark(i.id, i.title) }
 
 type model struct {
 	list list.Model
@@ -59,7 +59,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		}
 
 		if msg.Type == tea.MouseLeft {
-			for i, listItem := range m.list.Items() {
+			for i, listItem := range m.list.VisibleItems() {
 				item, _ := listItem.(item)
 				// Check each item to see if it's in bounds.
 				if zone.Get(item.id).InBounds(msg) {
