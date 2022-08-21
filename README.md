@@ -16,7 +16,6 @@
     <img title="Last commit" src="https://img.shields.io/github/last-commit/lrstanley/bubblezone?style=flat-square">
   </a>
 
-
   <a href="https://github.com/lrstanley/bubblezone/actions?query=workflow%3Atest+event%3Apush">
     <img title="GitHub Workflow Status (test @ master)" src="https://img.shields.io/github/workflow/status/lrstanley/bubblezone/test/master?label=test&style=flat-square&event=push">
   </a>
@@ -53,19 +52,19 @@
 <!-- do not edit anything in this "template" block, its auto-generated -->
 ## :link: Table of Contents
 
-  - [Problem](#x-problem)
-  - [Solution](#heavy_check_mark-solution)
-  - [Features](#sparkles-features)
-  - [Usage](#gear-usage)
-  - [Examples](#clap-examples)
-    - [List example](#list-example)
-    - [Lipgloss full example](#lipgloss-full-example)
-  - [Tips](#memo-tips)
-    - [Overlapping markers](#overlapping-markers)
-    - [Use lipgloss.Width](#use-lipglosswidth)
-    - [MaxHeight and MaxWidth](#maxheight-and-maxwidth)
-    - [Only scan at the root model](#only-scan-at-the-root-model)
-    - [Organic shapes](#organic-shapes)
+- [Problem](#x-problem)
+- [Solution](#heavy_check_mark-solution)
+- [Features](#sparkles-features)
+- [Usage](#gear-usage)
+- [Examples](#clap-examples)
+  - [List example](#list-example)
+  - [Lipgloss full example](#lipgloss-full-example)
+- [Tips](#memo-tips)
+  - [Overlapping markers](#overlapping-markers)
+  - [Use lipgloss.Width](#use-lipglosswidth)
+  - [MaxHeight and MaxWidth](#maxheight-and-maxwidth)
+  - [Only scan at the root model](#only-scan-at-the-root-model)
+  - [Organic shapes](#organic-shapes)
   - [Support &amp; Assistance](#raising_hand_man-support--assistance)
   - [Contributing](#handshake-contributing)
   - [License](#balance_scale-license)
@@ -92,16 +91,16 @@ becomes complicated, and rather tedious.
 **BubbleZone** is one solution to this problem. BubbleZone allows you to wrap your
 components in **zero-printable-width** (to not impact `lipgloss.Width()` calculations)
 identifiers. Additionally, there is a scan method that wraps the entire application,
-that stores the offsets of those identifiers as `zones`, then removing them from
+stores the offsets of those identifiers as `zones`, then removes them from
 the resulting output.
 
 Any time there is a mouse event, pass it down to all children, thus allowing you
 to easily check if the event is within the bounds of the components `zone`. This
-makes it very simple to do things like focusing various components, clicking
+makes it very simple to do things like focusing on various components, clicking
 "buttons", and more. Take a look at this example, where I didn't have to calculate
 where the mouse was being clicked, and which component was under the mouse:
 
-![bubblezone example](https://ls-screen.s3.us-west-004.backblazeb2.com/2022/07/WindowsTerminal_XxiuWQ2hVL.gif)
+![bubblezone example](https://cdn.liam.sh/share/2022/07/WindowsTerminal_XxiuWQ2hVL.gif)
 
 ## :sparkles: Features
 
@@ -221,7 +220,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 - All titles are marked as a unique zone, and upon left click, that item is focused.
 - [Example source](./examples/list-default/main.go).
 
-![list-default example](https://ls-screen.s3.us-west-004.backblazeb2.com/2022/07/WindowsTerminal_SelC1Vzdas.gif)
+![list-default example](https://cdn.liam.sh/share/2022/07/WindowsTerminal_SelC1Vzdas.gif)
 
 ### Lipgloss full example
 
@@ -230,7 +229,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
   model.
 - [Example source](./examples/full-lipgloss).
 
-![full-lipgloss example](https://ls-screen.s3.us-west-004.backblazeb2.com/2022/07/WindowsTerminal_tirP0rGZ2z.gif)
+![full-lipgloss example](https://cdn.liam.sh/share/2022/07/WindowsTerminal_tirP0rGZ2z.gif)
 
 ---
 
@@ -256,8 +255,8 @@ and other control characters).
 
 `MaxHeight()` and `MaxWidth()` do a hard-trim of characters to enforce a specific
 height and width. As such, if a child component is wrapped in a zone, and overlaps
-the maximum height/width, the zone will break and standard bounds checks
-**will not work**. Do to this, it is recommended to ensure `MaxHeight` and
+the maximum height/width, the zone will break, and standard bounds checks
+**will not work**. Due to this, it is recommended to ensure `MaxHeight` and
 `MaxWidth()` are only enforcing limits that should already be set by normal
 height/width limits on your components (i.e. just don't exceed the max viewport
 dimensions 😅).
@@ -269,7 +268,7 @@ work as you intend it in any other situation.
 
 ### Organic shapes
 
-BubbleZones `InBounds()` checks calculate bounds based off a box region. For
+BubbleZones `InBounds()` checks calculate bounds based on a box region. For
 example, if you have a model that generates a large circle, make sure the zone
 is properly padded (e.g. `lipgloss.Place()` or similar), to capture the entire
 circle. Though note that because it checks for the entire box, a mouse event
@@ -278,7 +277,7 @@ are clicked.
 
 Example:
 
-![bounding box](https://ls-screen.s3.us-west-004.backblazeb2.com/2022/07/dxehJb52R5.png)
+![bounding box](https://cdn.liam.sh/share/2022/07/dxehJb52R5.png)
 
 ---
 
@@ -286,24 +285,24 @@ Example:
 <!-- do not edit anything in this "template" block, its auto-generated -->
 ## :raising_hand_man: Support & Assistance
 
-* :heart: Please review the [Code of Conduct](.github/CODE_OF_CONDUCT.md) for
+- :heart: Please review the [Code of Conduct](.github/CODE_OF_CONDUCT.md) for
      guidelines on ensuring everyone has the best experience interacting with
      the community.
-* :raising_hand_man: Take a look at the [support](.github/SUPPORT.md) document on
+- :raising_hand_man: Take a look at the [support](.github/SUPPORT.md) document on
      guidelines for tips on how to ask the right questions.
-* :lady_beetle: For all features/bugs/issues/questions/etc, [head over here](https://github.com/lrstanley/bubblezone/issues/new/choose).
+- :lady_beetle: For all features/bugs/issues/questions/etc, [head over here](https://github.com/lrstanley/bubblezone/issues/new/choose).
 <!-- template:end:support -->
 
 <!-- template:begin:contributing -->
 <!-- do not edit anything in this "template" block, its auto-generated -->
 ## :handshake: Contributing
 
-* :heart: Please review the [Code of Conduct](.github/CODE_OF_CONDUCT.md) for guidelines
+- :heart: Please review the [Code of Conduct](.github/CODE_OF_CONDUCT.md) for guidelines
      on ensuring everyone has the best experience interacting with the
     community.
-* :clipboard: Please review the [contributing](.github/CONTRIBUTING.md) doc for submitting
+- :clipboard: Please review the [contributing](.github/CONTRIBUTING.md) doc for submitting
      issues/a guide on submitting pull requests and helping out.
-* :old_key: For anything security related, please review this repositories [security policy](https://github.com/lrstanley/bubblezone/security/policy).
+- :old_key: For anything security related, please review this repositories [security policy](https://github.com/lrstanley/bubblezone/security/policy).
 <!-- template:end:contributing -->
 
 <!-- template:begin:license -->
