@@ -128,6 +128,22 @@ func FuzzScan(f *testing.F) {
 	})
 }
 
+func TestScanDisabled(t *testing.T) {
+	zm := New()
+	defer zm.Close()
+
+	zm.SetEnabled(false)
+
+	for _, test := range testsScan {
+		t.Run(test.name, func(t *testing.T) {
+			got := zm.Scan(test.in)
+			if got != test.want {
+				t.Errorf("got %q, want %q", got, test.want)
+			}
+		})
+	}
+}
+
 func TestMark(t *testing.T) {
 	var out string
 	for _, test := range testsScan[0:10] {
@@ -150,6 +166,19 @@ func BenchmarkMark(b *testing.B) {
 				_ = Mark(test.name, test.in)
 			}
 		})
+	}
+}
+
+func TestMarkDisabled(t *testing.T) {
+	zm := New()
+	defer zm.Close()
+
+	zm.SetEnabled(false)
+
+	for _, test := range testsScan[0:10] {
+		if got := zm.Mark(test.name, test.in); got != test.in {
+			t.Errorf("got %q, want %q", got, test.in)
+		}
 	}
 }
 
