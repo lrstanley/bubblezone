@@ -25,6 +25,12 @@ var (
 	prefixCounter int64 = 0    // Protected by atomic operations.
 )
 
+// New creates a new (non-global) zone manager. The zone manager is responsible for
+// parsing zone information from the output of a component, and storing it for
+// later retrieval/bounds checks.
+//
+// The zone manager is enabled by default, and can be toggled by calling
+// SetEnabled().
 func New() (m *Manager) {
 	m = &Manager{
 		setChan: make(chan *ZoneInfo, 200),
@@ -34,6 +40,7 @@ func New() (m *Manager) {
 	}
 
 	m.ctx, m.cancel = context.WithCancel(context.Background())
+	m.enabled.Store(true)
 	go m.zoneWorker()
 
 	return m
@@ -44,6 +51,8 @@ func New() (m *Manager) {
 type Manager struct {
 	ctx     context.Context
 	cancel  func()
+	enabled atomic.Bool
+
 	setChan chan *ZoneInfo
 
 	zoneMu sync.RWMutex
@@ -65,11 +74,36 @@ func (m *Manager) Close() {
 	m.cancel()
 }
 
+// SetEnabled enables or disables the zone manager. When disabled, the zone manager
+// will still parse zone information, however it will immediately drop it and remove
+// zone markers from the resulting output.
+//
+// The zone manager is enabled by default.
+func (m *Manager) SetEnabled(enabled bool) {
+	m.enabled.Store(enabled)
+
+	if !enabled {
+		// Tell the worker to clear all zones if we're disabling the manager.
+		iteration := time.Now().Nanosecond()
+		m.setChan <- &ZoneInfo{iteration: iteration}
+	}
+}
+
+// Enabled returns whether the zone manager is enabled or not. When disabled,
+// the zone manager will still parse zone information, however it will immediately
+// drop it and remove zone markers from the resulting output.
+//
+// The zone manager is enabled by default.
+func (m *Manager) Enabled() bool {
+	return m.enabled.Load()
+}
+
 // NewPrefix generates a zone marker ID prefix, which can help prevent overlapping
 // zone markers between multiple components. Each call to NewPrefix() returns a
 // new unique prefix.
 //
 // Usage example:
+//
 //	func NewModel() tea.Model {
 //		return &model{
 //			id: zone.NewPrefix(),
@@ -108,7 +142,13 @@ func (m *Manager) NewPrefix() string {
 // manager to determine where the zone is, including its window offsets. The ANSI
 // sequences used should be ignored by lipgloss width methods, to prevent incorrect
 // width calculations.
+//
+// When the zone manager is disabled, Mark() will return v without any changes.
 func (m *Manager) Mark(id, v string) string {
+	if !m.Enabled() {
+		return v
+	}
+
 	if id == "" || v == "" {
 		return v
 	}
@@ -186,6 +226,12 @@ func (m *Manager) zoneWorker() {
 // not return the correct information. Thus it's recommended to primarily use
 // Get(id) for actions like mouse events, which don't occur immediately after a
 // view shift (where the previously stored zone info might be different).
+//
+// When the zone manager is disabled (via SetEnabled(false)), Scan() will return
+// the original view output with all zone markers stripped. It will still parse
+// the input for zone markers, as some users may cache generated views. In most
+// situations when the zone manager is disabled (and thus Mark() returns input
+// unchanged), Scan() will not need to do any work.
 func (m *Manager) Scan(v string) string {
 	iteration := time.Now().Nanosecond()
 	s := newScanner(m, v, iteration)
