@@ -3,7 +3,7 @@ module github.com/lrstanley/bubblezone
 go 1.19
 
 require (
-	github.com/charmbracelet/bubbletea v0.22.1
+	github.com/charmbracelet/bubbletea v0.23.1
 	github.com/charmbracelet/lipgloss v0.6.0
 	github.com/muesli/ansi v0.0.0-20211031195517-c9f0611b6c70
 )
