@@ -23,6 +23,8 @@ func (m *Manager) findInBounds(mouse tea.MouseMsg) []*ZoneInfo {
 	var zones []*ZoneInfo
 
 	m.zoneMu.RLock()
+	defer m.zoneMu.RUnlock()
+
 	for k := range m.zones {
 		keys = append(keys, k)
 	}
@@ -34,7 +36,6 @@ func (m *Manager) findInBounds(mouse tea.MouseMsg) []*ZoneInfo {
 			zones = append(zones, zone)
 		}
 	}
-	m.zoneMu.RUnlock()
 
 	return zones
 }
