@@ -18,13 +18,7 @@ type MsgZoneInBounds struct {
 	Event tea.MouseMsg // The mouse event that caused the zone to be in bounds.
 }
 
-// AnyInBounds sends a MsgZoneInBounds message to the provided model for each zone
-// that is in the bounds of the provided mouse event. The results of the call to
-// Update() are discarded.
-//
-// Note that if multiple zones are within bounds, each one will be sent as an event
-// in alphabetical sorted order of the ID.
-func (m *Manager) AnyInBounds(model tea.Model, mouse tea.MouseMsg) {
+func (m *Manager) findInBounds(mouse tea.MouseMsg) []*ZoneInfo {
 	var keys []string
 	var zones []*ZoneInfo
 	var zone *ZoneInfo
@@ -42,6 +36,18 @@ func (m *Manager) AnyInBounds(model tea.Model, mouse tea.MouseMsg) {
 		}
 	}
 	m.zoneMu.RUnlock()
+
+	return zones
+}
+
+// AnyInBounds sends a MsgZoneInBounds message to the provided model for each zone
+// that is in the bounds of the provided mouse event. The results of the call to
+// Update() are discarded.
+//
+// Note that if multiple zones are within bounds, each one will be sent as an event
+// in alphabetical sorted order of the ID.
+func (m *Manager) AnyInBounds(model tea.Model, mouse tea.MouseMsg) {
+	zones := m.findInBounds(mouse)
 
 	for _, zone := range zones {
 		_, _ = model.Update(MsgZoneInBounds{Zone: zone, Event: mouse})
