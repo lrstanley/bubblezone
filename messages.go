@@ -40,6 +40,21 @@ func (m *Manager) findInBounds(mouse tea.MouseMsg) []*ZoneInfo {
 	return zones
 }
 
+// AnyInBoundsAndUpdate is the same as AnyInBounds; except the results of the calls
+// to Update() are carried through and returned.
+//
+// The tea.Cmd's that comd off the calls to Update() are wrapped in tea.Batch().
+func (m *Manager) AnyInBoundsAndUpdate(model tea.Model, mouse tea.MouseMsg) (tea.Model, tea.Cmd) {
+	zones := m.findInBounds(mouse)
+
+	cmds := make([]tea.Cmd, len(zones))
+	for i, zone := range zones {
+		model, cmds[i] = model.Update(MsgZoneInBounds{Zone: zone, Event: mouse})
+	}
+
+	return model, tea.Batch(cmds...)
+}
+
 // AnyInBounds sends a MsgZoneInBounds message to the provided model for each zone
 // that is in the bounds of the provided mouse event. The results of the call to
 // Update() are discarded.
