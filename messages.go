@@ -21,7 +21,6 @@ type MsgZoneInBounds struct {
 func (m *Manager) findInBounds(mouse tea.MouseMsg) []*ZoneInfo {
 	var keys []string
 	var zones []*ZoneInfo
-	var zone *ZoneInfo
 
 	m.zoneMu.RLock()
 	for k := range m.zones {
@@ -30,7 +29,7 @@ func (m *Manager) findInBounds(mouse tea.MouseMsg) []*ZoneInfo {
 	sort.Strings(keys)
 
 	for _, k := range keys {
-		zone = m.zones[k]
+		zone := m.zones[k]
 		if zone.InBounds(mouse) {
 			zones = append(zones, zone)
 		}
