@@ -104,6 +104,6 @@ Below are a few guidelines if you would like to contribute:
 [discussions]: https://github.com/lrstanley/bubblezone/discussions
 [issues]: https://github.com/lrstanley/bubblezone/issues/new/choose
 [license]: https://github.com/lrstanley/bubblezone/blob/master/LICENSE
-[pull-requests]: https://github.com/lrstanley/bubblezone/issues/new/choose
+[pull-requests]: https://github.com/lrstanley/bubblezone/pulls?q=is%3Aopen+is%3Apr
 [security]: https://github.com/lrstanley/bubblezone/security/policy
 [support]: https://github.com/lrstanley/bubblezone/blob/master/.github/SUPPORT.md
