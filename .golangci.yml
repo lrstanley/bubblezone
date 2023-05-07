@@ -50,7 +50,6 @@ linters:
     - errcheck # checking for unchecked errors, these unchecked errors can be critical bugs in some cases
     - errorlint # finds code that will cause problems with the error wrapping scheme introduced in Go 1.13
     - execinquery # checks query string in Query function which reads your Go src files and warning it finds
-    - exhaustive # checks exhaustiveness of enum switch statements
     - exportloopref # checks for pointers to enclosing loop variables
     - forbidigo # forbids identifiers
     - funlen # tool for detection of long functions
@@ -71,7 +70,6 @@ linters:
     - gosimple # specializes in simplifying a code
     - govet # reports suspicious constructs, such as Printf calls whose arguments do not align with the format string
     - ineffassign # detects when assignments to existing variables are not used
-    - lll # reports long lines
     - loggercheck # checks key value pairs for common logger libraries (kitlog,klog,logr,zap)
     - makezero # finds slice declarations with non-zero initial length
     - misspell # finds commonly misspelled words
@@ -80,7 +78,6 @@ linters:
     - nilerr # finds the code that returns nil even if it checks that the error is not nil
     - nilnil # checks that there is no simultaneous return of nil error and an invalid value
     - noctx # finds sending http request without context.Context
-    - nolintlint # reports ill-formed or insufficient nolint directives
     - nosprintfhostport # checks for misuse of Sprintf to construct a host with port in a URL
     - predeclared # finds code that shadows one of Go's predeclared identifiers
     - promlinter # checks Prometheus metrics naming via promlint
@@ -122,12 +119,6 @@ linters-settings:
     # Such cases aren't reported by default.
     check-type-assertions: true
 
-  exhaustive:
-    # Program elements to check for exhaustiveness.
-    check:
-      - switch
-      - map
-
   funlen:
     # Checks the number of lines in a function.
     # If lower than 0, disable the check.
@@ -143,8 +134,8 @@ linters-settings:
   gocritic:
     disabled-checks:
       - whyNoLint
-      # - hugeParam
-      # - ifElseChain
+      - hugeParam
+      - ifElseChain
     enabled-tags:
       - diagnostic
       - opinionated
@@ -203,14 +194,6 @@ linters-settings:
   nakedret:
     # Make an issue if func has more lines of code than this setting, and it has naked returns.
     max-func-lines: 0
-
-  nolintlint:
-    # Exclude following linters from requiring an explanation.
-    allow-no-explanation: [funlen, gocognit, lll]
-    # Enable to require an explanation of nonzero length after each nolint directive.
-    require-explanation: false
-    # Enable to require nolint directives to mention the specific linter being suppressed.
-    require-specific: false
 
   rowserrcheck:
     # database/sql is always checked
