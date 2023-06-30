@@ -60,15 +60,15 @@
   - [Examples](#clap-examples)
     - [List example](#list-example)
     - [Lipgloss full example](#lipgloss-full-example)
-  - [📝 Tips](#memo-tips)
+  - [Tips](#memo-tips)
     - [Overlapping markers](#overlapping-markers)
     - [Use lipgloss.Width](#use-lipglosswidth)
     - [MaxHeight and MaxWidth](#maxheight-and-maxwidth)
     - [Only scan at the root model](#only-scan-at-the-root-model)
     - [Organic shapes](#organic-shapes)
   - [Support &amp; Assistance](#raising_hand_man-support--assistance)
-  - [Contributing](#handshake-contributing)
-  - [⚖️ License](#balance_scale-license)
+  - [🤝 Contributing](#handshake-contributing)
+  - [License](#balance_scale-license)
 <!-- template:end:toc -->
 
 ## :x: Problem
