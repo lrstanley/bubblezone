@@ -56,7 +56,7 @@
   - [Problem](#x-problem)
   - [Solution](#heavy_check_mark-solution)
   - [Features](#sparkles-features)
-  - [⚙️ Usage](#gear-usage)
+  - [Usage](#gear-usage)
   - [Examples](#clap-examples)
     - [List example](#list-example)
     - [Lipgloss full example](#lipgloss-full-example)
@@ -68,7 +68,7 @@
     - [Organic shapes](#organic-shapes)
   - [Support &amp; Assistance](#raising_hand_man-support--assistance)
   - [Contributing](#handshake-contributing)
-  - [⚖️ License](#balance_scale-license)
+  - [License](#balance_scale-license)
 <!-- template:end:toc -->
 
 ## :x: Problem
