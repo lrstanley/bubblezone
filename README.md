@@ -55,9 +55,9 @@
 
   - [❌ Problem](#x-problem)
   - [✔️ Solution](#heavy_check_mark-solution)
-  - [Features](#sparkles-features)
+  - [✨ Features](#sparkles-features)
   - [Usage](#gear-usage)
-  - [Examples](#clap-examples)
+  - [👏 Examples](#clap-examples)
     - [List example](#list-example)
     - [Lipgloss full example](#lipgloss-full-example)
   - [📝 Tips](#memo-tips)
