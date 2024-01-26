@@ -17,7 +17,7 @@ const (
 	// part of the width of the view.
 	identStart   = '\x1B' // ANSI escape code.
 	identBracket = '['
-	identEnd     = 'Z' // escape terminator.
+	identEnd     = 'z' // escape terminator.
 )
 
 var (
