@@ -155,6 +155,16 @@ func main() {
 }
 ```
 
+Ensure the mouse is enabled and the program is running in alt screen mode (i.e. full window mode).
+
+```go
+func main() {
+	// [...]
+	p := tea.NewProgram(m, tea.WithAltScreen(), tea.WithMouseCellMotion())
+	// [...]
+}
+```
+
 In your root model, wrap your `View()` output in `zone.Scan()`, which will register
 and monitor all zones, including stripping the ANSI sequences injected by `zone.Mark()`.
 
