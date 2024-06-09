@@ -48,21 +48,21 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		h, v := docStyle.GetFrameSize()
 		m.list.SetSize(msg.Width-h, msg.Height-v)
 	case tea.MouseMsg:
-		if msg.Type == tea.MouseWheelUp {
+		if msg.Button == tea.MouseButtonWheelUp {
 			m.list.CursorUp()
 			return m, nil
 		}
 
-		if msg.Type == tea.MouseWheelDown {
+		if msg.Button == tea.MouseButtonWheelDown {
 			m.list.CursorDown()
 			return m, nil
 		}
 
-		if msg.Type == tea.MouseLeft {
+		if msg.Action == tea.MouseActionRelease && msg.Button == tea.MouseButtonLeft {
 			for i, listItem := range m.list.VisibleItems() {
-				item, _ := listItem.(item)
+				v, _ := listItem.(item)
 				// Check each item to see if it's in bounds.
-				if zone.Get(item.id).InBounds(msg) {
+				if zone.Get(v.id).InBounds(msg) {
 					// If so, select it in the list.
 					m.list.Select(i)
 					break
@@ -121,8 +121,8 @@ func main() {
 
 	p := tea.NewProgram(m, tea.WithAltScreen(), tea.WithMouseCellMotion())
 
-	if err := p.Start(); err != nil {
-		fmt.Println("Error running program:", err)
+	if _, err := p.Run(); err != nil {
+		fmt.Println("error running program:", err)
 		os.Exit(1)
 	}
 }

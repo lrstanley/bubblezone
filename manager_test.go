@@ -123,7 +123,7 @@ func FuzzScan(f *testing.F) {
 		f.Add(test.want)
 	}
 
-	f.Fuzz(func(t *testing.T, a string) {
+	f.Fuzz(func(_ *testing.T, a string) {
 		_ = Scan(a)
 	})
 }
@@ -144,7 +144,7 @@ func TestScanDisabled(t *testing.T) {
 	}
 }
 
-func TestMark(t *testing.T) {
+func TestMark(_ *testing.T) {
 	var out string
 	for _, test := range testsScan[0:10] {
 		got := Mark(test.name, test.in)
@@ -211,7 +211,7 @@ func TestClose(t *testing.T) {
 	}
 }
 
-func TestGlobalInitialize(t *testing.T) {
+func TestGlobalInitialize(_ *testing.T) {
 	NewGlobal()
 	NewGlobal()
 }

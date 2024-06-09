@@ -7,7 +7,7 @@ package zone
 import tea "github.com/charmbracelet/bubbletea"
 
 // ZoneInfo holds information about the start and end positions of a zone.
-type ZoneInfo struct {
+type ZoneInfo struct { // nolint:revive
 	id        string // rid of the zone.
 	iteration int    // The iteration of the zone, used for cleaning up old zones.
 

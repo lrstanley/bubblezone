@@ -21,12 +21,6 @@ var (
 	subtle    = lipgloss.AdaptiveColor{Light: "#D9DCCF", Dark: "#383838"}
 	highlight = lipgloss.AdaptiveColor{Light: "#874BFD", Dark: "#7D56F4"}
 	special   = lipgloss.AdaptiveColor{Light: "#43BF6D", Dark: "#73F59F"}
-
-	divider = lipgloss.NewStyle().
-		SetString("•").
-		Padding(0, 1).
-		Foreground(subtle).
-		String()
 )
 
 type model struct {
@@ -169,8 +163,8 @@ func main() {
 
 	p := tea.NewProgram(m, tea.WithAltScreen(), tea.WithMouseCellMotion())
 
-	if err := p.Start(); err != nil {
-		fmt.Println("Error running program:", err)
+	if _, err := p.Run(); err != nil {
+		fmt.Println("error running program:", err)
 		os.Exit(1)
 	}
 }

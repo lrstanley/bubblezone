@@ -40,9 +40,9 @@ var (
 		BorderForeground(highlight).
 		Padding(0, 1)
 
-	activeTab = tab.Copy().Border(activeTabBorder, true)
+	activeTab = tab.Border(activeTabBorder, true)
 
-	tabGap = tab.Copy().
+	tabGap = tab.
 		BorderTop(false).
 		BorderLeft(false).
 		BorderRight(false)
@@ -66,7 +66,7 @@ func (m tabs) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.WindowSizeMsg:
 		m.width = msg.Width
 	case tea.MouseMsg:
-		if msg.Type != tea.MouseLeft {
+		if msg.Action != tea.MouseActionRelease || msg.Button != tea.MouseButtonLeft {
 			return m, nil
 		}
 

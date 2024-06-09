@@ -77,14 +77,14 @@
 allow you to build extremely fast terminal interfaces, in a semantic and scalable
 way. Through abstracting layout, colors, events, and more, it's very easy to build
 a user-friendly application. BubbleTea also supports mouse events, either through
-the "basic" mouse events, like `MouseLeft`, `MouseRight`, `MouseWheelUp` and
-`MouseWheelDown` ([and more](https://github.com/charmbracelet/bubbletea/blob/0a0182e55a30e85640a53b8e01dc9ef06824cce5/mouse.go#L38-L48)),
+the "basic" mouse events, like `MouseButtonLeft`, `MouseButtonRight`, `MouseButtonWheelUp` and
+`MouseButtonWheelDown` ([and more](https://github.com/charmbracelet/bubbletea/blob/0a0182e55a30e85640a53b8e01dc9ef06824cce5/mouse.go#L38-L48)),
 or through full motion tracking, allowing hover and mouse movement tracking.
 
-This works great for a single-component application, where state is managed in one
+This works great for a single-component application, where the state is managed in one
 location. However, when you start expanding your application, where components have
 various children, and those children have children, calculating mouse events like
-`MouseLeft` and `MouseRight` and determining which component was actually clicked
+`MouseButtonLeft` and `MouseButtonRight` and determining which component was clicked
 becomes complicated, and rather tedious.
 
 ## :heavy_check_mark: Solution
@@ -92,7 +92,7 @@ becomes complicated, and rather tedious.
 **BubbleZone** is one solution to this problem. BubbleZone allows you to wrap your
 components in **zero-printable-width** (to not impact `lipgloss.Width()` calculations)
 identifiers. Additionally, there is a scan method that wraps the entire application,
-stores the offsets of those identifiers as `zones`, then removes them from
+stores the offsets of those identifiers as `zones`, and then removes them from
 the resulting output.
 
 Any time there is a mouse event, pass it down to all children, thus allowing you
@@ -188,7 +188,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	// [...]
 	case tea.MouseMsg:
-		if msg.Type != tea.MouseLeft {
+		if msg.Action != tea.MouseActionRelease || msg.Button != tea.MouseButtonLeft {
 			return m, nil
 		}
 
