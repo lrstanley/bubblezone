@@ -17,7 +17,14 @@ const (
 	// part of the width of the view.
 	identStart   = '\x1B' // ANSI escape code.
 	identBracket = '['
-	identEnd     = 'Z' // escape terminator.
+	// The escape terminator.
+	//
+	// Refs:
+	//  - https://en.wikipedia.org/wiki/ANSI_escape_code#CSI_(Control_Sequence_Introducer)_sequences
+	//    > A subset of arrangements was declared "private" so that terminal manufacturers could insert
+	//    > their own sequences without conflicting with the standard. Sequences containing the parameter
+	//    > bytes <=>? or the final bytes 0x70-0x7E (p-z{|}~) are private.
+	identEnd = 'z' // escape terminator.
 )
 
 var (
