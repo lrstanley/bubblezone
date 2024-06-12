@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	github.com/charmbracelet/bubbletea v0.26.4
-	github.com/charmbracelet/lipgloss v0.6.0
+	github.com/charmbracelet/lipgloss v0.11.0
 	github.com/muesli/ansi v0.0.0-20230316100256-276c6243b2f6
 )
 
