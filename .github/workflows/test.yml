@@ -17,3 +17,4 @@ jobs:
     uses: lrstanley/.github/.github/workflows/lang-go-lint.yml@master
     secrets:
       SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+      CODECOV_TOKEN: ${{ secrets.CODECOV_TOKEN }}
