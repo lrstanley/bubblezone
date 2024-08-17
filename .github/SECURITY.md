@@ -21,7 +21,7 @@ issue/vulnerability further.
 
 Best method of contact: [GPG :key:](https://github.com/lrstanley.gpg)
 
-   * :speech_balloon: [Discord][chat]: message `/home/liam#0000`.
+   * :speech_balloon: [Discord][chat]: message `lrstanley` (`/home/liam#0000`).
    * :email: Email: `security@liam.sh`
 
 Backup contacts (if I am unresponsive after **48h**): [GPG :key:](https://github.com/FM1337.gpg)
