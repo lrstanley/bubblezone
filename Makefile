@@ -5,16 +5,13 @@ fetch:
 	go mod download
 	go mod tidy
 
-upgrade-deps:
-	go get -u ./...
-	go mod tidy
-
-upgrade-deps-patch:
-	go get -u=patch ./...
-	go mod tidy
+up:
+	go get -u ./... && go mod tidy
+	cd examples && go get -u ./... && go mod tidy
 
 test:
 	go test -v ./...
+	cd examples && go test -v ./...
 
 fuzz:
 	go test -fuzz=FuzzScan -timeout=1m
