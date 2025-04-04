@@ -2,10 +2,17 @@ name: renovate
 
 on:
   workflow_dispatch:
+    inputs:
+      force-run:
+        description: >-
+          Force a run regardless of the schedule configuration.
+        required: false
+        default: false
+        type: boolean
   push:
     branches: [master]
   schedule:
-    - cron: "* 1 * * *"
+    - cron: "0 * * * *"
 
 jobs:
   renovate:
