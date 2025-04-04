@@ -18,3 +18,5 @@ jobs:
   renovate:
     uses: lrstanley/.github/.github/workflows/renovate.yml@master
     secrets: inherit
+    with:
+      force-run: ${{ inputs.force-run }}
