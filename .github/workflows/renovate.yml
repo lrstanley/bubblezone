@@ -17,6 +17,4 @@ on:
 jobs:
   renovate:
     uses: lrstanley/.github/.github/workflows/renovate.yml@master
-    secrets:
-      app-id: ${{ secrets.BOT_APP_ID }}
-      app-private-key: ${{ secrets.BOT_PRIVATE_KEY }}
+    secrets: inherit
