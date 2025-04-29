@@ -8,9 +8,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/charmbracelet/bubbles/list"
-	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
+	"github.com/charmbracelet/bubbles/v2/list"
+	tea "github.com/charmbracelet/bubbletea/v2"
+	"github.com/charmbracelet/lipgloss/v2"
 	zone "github.com/lrstanley/bubblezone"
 )
 
@@ -48,17 +48,20 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		h, v := docStyle.GetFrameSize()
 		m.list.SetSize(msg.Width-h, msg.Height-v)
 	case tea.MouseMsg:
-		if msg.Button == tea.MouseButtonWheelUp {
-			m.list.CursorUp()
-			return m, nil
-		}
-
-		if msg.Button == tea.MouseButtonWheelDown {
-			m.list.CursorDown()
-			return m, nil
-		}
-
-		if msg.Action == tea.MouseActionRelease && msg.Button == tea.MouseButtonLeft {
+		switch msg := msg.(type) {
+		case tea.MouseWheelMsg:
+			switch msg.Button {
+			case tea.MouseWheelUp:
+				m.list.CursorUp()
+				return m, nil
+			case tea.MouseWheelDown:
+				m.list.CursorDown()
+				return m, nil
+			}
+		case tea.MouseReleaseMsg:
+			if msg.Button != tea.MouseLeft {
+				break
+			}
 			for i, listItem := range m.list.VisibleItems() {
 				v, _ := listItem.(item)
 				// Check each item to see if it's in bounds.
@@ -122,7 +125,7 @@ func main() {
 	p := tea.NewProgram(m, tea.WithAltScreen(), tea.WithMouseCellMotion())
 
 	if _, err := p.Run(); err != nil {
-		fmt.Println("error running program:", err)
+		fmt.Println("error running program:", err) //nolint:forbidigo
 		os.Exit(1)
 	}
 }

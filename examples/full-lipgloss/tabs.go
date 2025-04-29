@@ -7,8 +7,8 @@ package main
 import (
 	"strings"
 
-	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
+	tea "github.com/charmbracelet/bubbletea/v2"
+	"github.com/charmbracelet/lipgloss/v2"
 	zone "github.com/lrstanley/bubblezone"
 )
 
@@ -65,8 +65,8 @@ func (m tabs) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
 		m.width = msg.Width
-	case tea.MouseMsg:
-		if msg.Action != tea.MouseActionRelease || msg.Button != tea.MouseButtonLeft {
+	case tea.MouseReleaseMsg:
+		if msg.Button != tea.MouseLeft {
 			return m, nil
 		}
 

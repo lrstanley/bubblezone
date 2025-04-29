@@ -5,8 +5,9 @@
 package main
 
 import (
-	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
+	tea "github.com/charmbracelet/bubbletea/v2"
+	"github.com/charmbracelet/lipgloss/v2"
+	"github.com/charmbracelet/lipgloss/v2/compat"
 	zone "github.com/lrstanley/bubblezone"
 )
 
@@ -33,7 +34,7 @@ var (
 	listDoneStyle = func(s string) string {
 		return checkMark + lipgloss.NewStyle().
 			Strikethrough(true).
-			Foreground(lipgloss.AdaptiveColor{Light: "#969B86", Dark: "#696969"}).
+			Foreground(compat.AdaptiveColor{Light: lipgloss.Color("#969B86"), Dark: lipgloss.Color("#696969")}).
 			Render(s)
 	}
 )
@@ -60,8 +61,8 @@ func (m list) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
 		m.width = msg.Width
-	case tea.MouseMsg:
-		if msg.Action != tea.MouseActionRelease || msg.Button != tea.MouseButtonLeft {
+	case tea.MouseReleaseMsg:
+		if msg.Button != tea.MouseLeft {
 			return m, nil
 		}
 

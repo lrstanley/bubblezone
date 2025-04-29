@@ -4,7 +4,7 @@
 
 package zone
 
-import tea "github.com/charmbracelet/bubbletea"
+import tea "github.com/charmbracelet/bubbletea/v2"
 
 // ZoneInfo holds information about the start and end positions of a zone.
 type ZoneInfo struct { // nolint:revive
@@ -31,7 +31,7 @@ func (z *ZoneInfo) IsZero() bool {
 // using a box between the start and end coordinates. If you're looking to check
 // for abnormal shapes (e.g. something that might wrap a line, but can't be
 // determined using a box), you'll likely have to implement this yourself.
-func (z *ZoneInfo) InBounds(e tea.MouseMsg) bool {
+func (z *ZoneInfo) InBounds(msg tea.MouseMsg) bool {
 	if z.IsZero() {
 		return false
 	}
@@ -40,14 +40,14 @@ func (z *ZoneInfo) InBounds(e tea.MouseMsg) bool {
 		return false
 	}
 
-	if e.X < z.StartX || e.Y < z.StartY {
+	event := msg.Mouse()
+
+	if event.X < z.StartX || event.Y < z.StartY {
 		return false
 	}
-
-	if e.X > z.EndX || e.Y > z.EndY {
+	if event.X > z.EndX || event.Y > z.EndY {
 		return false
 	}
-
 	return true
 }
 
@@ -59,5 +59,7 @@ func (z *ZoneInfo) Pos(msg tea.MouseMsg) (x, y int) {
 		return -1, -1
 	}
 
-	return msg.X - z.StartX, msg.Y - z.StartY
+	event := msg.Mouse()
+
+	return event.X - z.StartX, event.Y - z.StartY
 }
