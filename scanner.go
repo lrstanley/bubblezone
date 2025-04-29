@@ -7,7 +7,7 @@ package zone
 import (
 	"unicode/utf8"
 
-	"github.com/muesli/ansi"
+	"github.com/mattn/go-runewidth"
 )
 
 const (
@@ -66,7 +66,7 @@ func (s *scanner) emit() {
 	if item, ok := s.tracked[rid]; ok {
 		// The end should be - 1, because it's the end of the encapsulation of the
 		// zone, and isn't actually taking up another space.
-		item.EndX = ansi.PrintableRuneWidth(s.input[s.lastNewline:s.start]) - 1
+		item.EndX = printableRuneWidth(s.input[s.lastNewline:s.start]) - 1
 		item.EndY = s.newlines
 
 		s.manager.setChan <- item
@@ -76,7 +76,7 @@ func (s *scanner) emit() {
 		s.tracked[rid] = &ZoneInfo{
 			id:        rid,
 			iteration: s.iteration,
-			StartX:    ansi.PrintableRuneWidth(s.input[s.lastNewline:s.start]),
+			StartX:    printableRuneWidth(s.input[s.lastNewline:s.start]),
 			StartY:    s.newlines,
 		}
 	}
@@ -157,4 +157,25 @@ func isNumber(r rune) bool {
 		return false
 	}
 	return true
+}
+
+// printableRuneWidth returns the printable cell width of the given string.
+func printableRuneWidth(s string) int {
+	var n int
+	var ansi bool
+
+	for _, c := range s {
+		if c == identStart { // Start of ANSI escape sequence.
+			ansi = true
+		} else if ansi {
+			// Check if at the end of an ANSI escape sequence (terminator).
+			if (c >= 0x40 && c <= 0x5a) || (c >= 0x61 && c <= 0x7a) {
+				ansi = false
+			}
+		} else {
+			n += runewidth.RuneWidth(c)
+		}
+	}
+
+	return n
 }
