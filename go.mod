@@ -1,4 +1,4 @@
-module github.com/lrstanley/bubblezone
+module github.com/lrstanley/bubblezone/v2
 
 go 1.23.0
 

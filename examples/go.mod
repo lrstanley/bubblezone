@@ -1,16 +1,16 @@
-module github.com/lrstanley/bubblezone/examples
+module github.com/lrstanley/bubblezone/v2/examples
 
 go 1.23.0
 
 toolchain go1.24.2
 
-replace github.com/lrstanley/bubblezone => ../
+replace github.com/lrstanley/bubblezone/v2 => ../
 
 require (
 	github.com/charmbracelet/bubbles/v2 v2.0.0-beta.1
 	github.com/charmbracelet/bubbletea/v2 v2.0.0-beta.1
 	github.com/charmbracelet/lipgloss/v2 v2.0.0-beta.1
-	github.com/lrstanley/bubblezone v0.0.0-20250404061050-e13639e27357
+	github.com/lrstanley/bubblezone/v2 v2.0.0-00010101000000-000000000000
 )
 
 require (
