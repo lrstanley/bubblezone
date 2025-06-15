@@ -2,10 +2,10 @@ module github.com/lrstanley/bubblezone
 
 go 1.23.0
 
-toolchain go1.24.2
+toolchain go1.24.4
 
 require (
-	github.com/charmbracelet/bubbletea v1.3.4
+	github.com/charmbracelet/bubbletea v1.3.5
 	github.com/charmbracelet/lipgloss v1.1.0
 	github.com/muesli/ansi v0.0.0-20230316100256-276c6243b2f6
 )
