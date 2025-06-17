@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/charmbracelet/lipgloss"
+	"github.com/charmbracelet/lipgloss/v2"
 )
 
 func TestMain(m *testing.M) {
@@ -91,7 +91,7 @@ var (
 func BenchmarkScan(b *testing.B) {
 	for _, test := range testsScan {
 		b.Run(test.name, func(b *testing.B) {
-			for i := 0; i < b.N; i++ {
+			for range b.N {
 				_ = Scan(test.in)
 			}
 		})
@@ -162,7 +162,7 @@ func TestMark(_ *testing.T) {
 func BenchmarkMark(b *testing.B) {
 	for _, test := range testsScan {
 		b.Run(test.name, func(b *testing.B) {
-			for i := 0; i < b.N; i++ {
+			for range b.N {
 				_ = Mark(test.name, test.in)
 			}
 		})
