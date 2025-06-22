@@ -19,4 +19,4 @@ jobs:
     uses: lrstanley/.github/.github/workflows/renovate.yml@master
     secrets: inherit
     with:
-      force-run: ${{ inputs.force-run == true }}
+      force-run: ${{ inputs.force-run == true || github.event_name == 'schedule' }}
