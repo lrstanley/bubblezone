@@ -176,6 +176,8 @@ linters:
         - -ST1016
         # Omit embedded fields from selector expression: https://staticcheck.dev/docs/checks/#QF1008
         - -QF1008
+        # duplicate struct tags -- used commonly for things like go-flags.
+        - -SA5008
     usetesting:
       os-temp-dir: true
   exclusions:
