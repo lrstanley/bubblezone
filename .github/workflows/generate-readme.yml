@@ -10,5 +10,4 @@ on:
 jobs:
   generate:
     uses: lrstanley/.github/.github/workflows/generate-readme.yml@master
-    secrets:
-      token: ${{ secrets.USER_PAT }}
+    secrets: inherit

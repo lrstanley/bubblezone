@@ -29,5 +29,4 @@ jobs:
       ref: ${{ github.event.inputs.ref }}
       custom: ${{ github.event.inputs.custom }}
       annotation: ${{ github.event.inputs.annotation }}
-    secrets:
-      token: ${{ secrets.USER_PAT }}
+    secrets: inherit
