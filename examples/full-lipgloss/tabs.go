@@ -37,7 +37,6 @@ var (
 
 	tab = lipgloss.NewStyle().
 		Border(tabBorder, true).
-		BorderForeground(highlight).
 		Padding(0, 1)
 
 	activeTab = tab.Border(activeTabBorder, true)
@@ -49,25 +48,31 @@ var (
 )
 
 type tabs struct {
-	id     string
-	height int
-	width  int
+	id    string
+	width int
+	dark  bool
 
 	active string
 	items  []string
 }
 
-func (m tabs) Init() tea.Cmd {
+func (m *tabs) Init() tea.Cmd {
 	return nil
 }
 
-func (m tabs) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m *tabs) GetHeight() int {
+	return lipgloss.Height(m.View())
+}
+
+func (m *tabs) Update(msg tea.Msg) tea.Cmd { //nolint:unparam
 	switch msg := msg.(type) {
+	case tea.BackgroundColorMsg:
+		m.dark = msg.IsDark()
 	case tea.WindowSizeMsg:
 		m.width = msg.Width
 	case tea.MouseReleaseMsg:
 		if msg.Button != tea.MouseLeft {
-			return m, nil
+			return nil
 		}
 
 		for _, item := range m.items {
@@ -78,24 +83,29 @@ func (m tabs) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		}
 
-		return m, nil
+		return nil
 	}
-	return m, nil
+	return nil
 }
 
-func (m tabs) View() string {
+func (m *tabs) View() string {
 	out := []string{}
+
+	color := highlight.Adapt(m.dark)
 
 	for _, item := range m.items {
 		// Make sure to mark each tab when rendering.
 		if item == m.active {
-			out = append(out, zone.Mark(m.id+item, activeTab.Render(item)))
+			out = append(out, zone.Mark(m.id+item, activeTab.BorderForeground(color).Render(item)))
 		} else {
-			out = append(out, zone.Mark(m.id+item, tab.Render(item)))
+			out = append(out, zone.Mark(
+				m.id+item,
+				tab.BorderForeground(color).Render(item)),
+			)
 		}
 	}
 	row := lipgloss.JoinHorizontal(lipgloss.Top, out...)
-	gap := tabGap.Render(strings.Repeat(" ", max(0, m.width-lipgloss.Width(row)-2)))
+	gap := tabGap.BorderForeground(color).Render(strings.Repeat(" ", max(0, m.width-lipgloss.Width(row)-2)))
 	row = lipgloss.JoinHorizontal(lipgloss.Bottom, row, gap)
 	return row
 }

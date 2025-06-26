@@ -23,7 +23,7 @@ var (
 			MarginTop(1).
 			MarginRight(2)
 
-	activeButtonStyle = buttonStyle.Copy().
+	activeButtonStyle = buttonStyle.
 				Foreground(lipgloss.Color("#FFF7DB")).
 				Background(lipgloss.Color("#F25D94")).
 				MarginRight(2).
@@ -31,25 +31,24 @@ var (
 )
 
 type dialog struct {
-	id     string
-	height int
-	width  int
-
+	id       string
 	active   string
 	question string
 }
 
-func (m dialog) Init() tea.Cmd {
+func (m *dialog) Init() tea.Cmd {
 	return nil
 }
 
-func (m dialog) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m *dialog) GetHeight() int {
+	return lipgloss.Height(m.View())
+}
+
+func (m *dialog) Update(msg tea.Msg) tea.Cmd { //nolint:unparam
 	switch msg := msg.(type) {
-	case tea.WindowSizeMsg:
-		m.width = msg.Width
 	case tea.MouseReleaseMsg:
 		if msg.Button != tea.MouseLeft {
-			return m, nil
+			return nil
 		}
 
 		if zone.Get(m.id + "confirm").InBounds(msg) {
@@ -58,12 +57,12 @@ func (m dialog) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.active = "cancel"
 		}
 
-		return m, nil
+		return nil
 	}
-	return m, nil
+	return nil
 }
 
-func (m dialog) View() string {
+func (m *dialog) View() string {
 	var okButton, cancelButton string
 
 	if m.active == "confirm" {
@@ -74,7 +73,7 @@ func (m dialog) View() string {
 		cancelButton = activeButtonStyle.Render("Maybe")
 	}
 
-	question := lipgloss.NewStyle().Width(27).Align(lipgloss.Center).Render("Are you sure you want to eat marmalade?")
+	question := lipgloss.NewStyle().Width(27).Align(lipgloss.Center).Render(m.question)
 	buttons := lipgloss.JoinHorizontal(
 		lipgloss.Top,
 		zone.Mark(m.id+"confirm", okButton),

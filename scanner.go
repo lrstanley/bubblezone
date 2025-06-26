@@ -112,14 +112,14 @@ func (s *scanner) peek() rune {
 
 // scanMain is the entrypoint into the state machine.
 func scanMain(s *scanner) stateFn {
-	switch r := s.next(); {
-	case r == eof:
+	switch r := s.next(); r {
+	case eof:
 		return nil
-	case r == '\n':
+	case '\n':
 		s.newlines++
 		s.lastNewline = s.pos
 		return scanMain
-	case r == identStart:
+	case identStart:
 		s.start = s.pos - 1
 		return scanID
 	default:
