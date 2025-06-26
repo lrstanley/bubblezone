@@ -5,13 +5,20 @@
 package zone
 
 import (
+	"sync"
 	"testing"
 	"time"
 
-	tea "github.com/charmbracelet/bubbletea"
+	tea "github.com/charmbracelet/bubbletea/v2"
+)
+
+var (
+	_ tea.Model     = (*testModel)(nil)
+	_ tea.ViewModel = (*testModel)(nil)
 )
 
 type testModel struct {
+	mu       sync.RWMutex
 	received []tea.Msg
 }
 
@@ -29,7 +36,9 @@ func (m *testModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		go AnyInBounds(m, msg)
 		return m, nil
 	case MsgZoneInBounds:
+		m.mu.Lock()
 		m.received = append(m.received, msg)
+		m.mu.Unlock()
 	}
 	return m, nil
 }
@@ -48,10 +57,12 @@ func TestAnyInBounds(t *testing.T) {
 		t.Error("id not found")
 	}
 
-	_, _ = m.Update(tea.MouseMsg{X: 4, Y: 2})
+	_, _ = m.Update(tea.MouseMotionMsg{X: 4, Y: 2})
 	time.Sleep(100 * time.Millisecond)
 
 	var contains bool
+	m.mu.RLock()
+	defer m.mu.RUnlock()
 	for _, msg := range m.received {
 		if evt, ok := msg.(MsgZoneInBounds); ok {
 			if evt.Zone.id == xy.id {
@@ -66,7 +77,13 @@ func TestAnyInBounds(t *testing.T) {
 	}
 }
 
+var (
+	_ tea.Model     = (*testModelValue)(nil)
+	_ tea.ViewModel = (*testModelValue)(nil)
+)
+
 type testModelValue struct {
+	mu       sync.RWMutex
 	received []tea.Msg
 }
 
@@ -79,7 +96,9 @@ func (m testModelValue) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.MouseMsg:
 		return AnyInBoundsAndUpdate(m, msg)
 	case MsgZoneInBounds:
+		m.mu.Lock()
 		m.received = append(m.received, msg)
+		m.mu.Unlock()
 	}
 	return m, nil
 }
@@ -90,7 +109,8 @@ func (m testModelValue) View() string {
 }
 
 func TestAnyInBoundsAndUpdate(t *testing.T) {
-	var m tea.Model = testModelValue{}
+	m := testModelValue{}
+
 	_ = Scan(m.View())
 	time.Sleep(100 * time.Millisecond)
 	xy := Get("foo")
@@ -98,11 +118,14 @@ func TestAnyInBoundsAndUpdate(t *testing.T) {
 		t.Error("id not found")
 	}
 
-	m, _ = m.Update(tea.MouseMsg{X: 4, Y: 2})
+	newModel, _ := m.Update(tea.MouseMotionMsg{X: 4, Y: 2})
+	m = newModel.(testModelValue)
 	time.Sleep(100 * time.Millisecond)
 
 	var contains bool
-	for _, msg := range m.(testModelValue).received {
+	m.mu.RLock()
+	defer m.mu.RUnlock()
+	for _, msg := range m.received {
 		if evt, ok := msg.(MsgZoneInBounds); ok {
 			if evt.Zone.id == xy.id {
 				contains = true
