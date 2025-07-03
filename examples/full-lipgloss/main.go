@@ -8,7 +8,6 @@ import (
 	"fmt"
 	"image/color"
 	"os"
-	"time"
 
 	tea "github.com/charmbracelet/bubbletea/v2"
 	"github.com/charmbracelet/lipgloss/v2"
@@ -172,12 +171,6 @@ func main() {
 	}
 
 	p := tea.NewProgram(m, tea.WithAltScreen(), tea.WithMouseCellMotion())
-
-	// Temporary workaround for: https://github.com/charmbracelet/bubbletea/issues/1406
-	go func() {
-		time.Sleep(250 * time.Millisecond)
-		p.Send(tea.BackgroundColorMsg{Color: lipgloss.Color("#000000")})
-	}()
 
 	if _, err := p.Run(); err != nil {
 		fmt.Println("error running program:", err) //nolint:forbidigo
