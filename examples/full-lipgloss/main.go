@@ -6,36 +6,51 @@ package main
 
 import (
 	"fmt"
+	"image/color"
 	"os"
 
-	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
-	zone "github.com/lrstanley/bubblezone"
+	tea "github.com/charmbracelet/bubbletea/v2"
+	"github.com/charmbracelet/lipgloss/v2"
+	zone "github.com/lrstanley/bubblezone/v2"
 )
 
 // This is a modified version of this example, supporting full screen, dynamic
 // resizing, and clickable models (tabs, lists, dialogs, etc).
 // 	https://github.com/charmbracelet/lipgloss/blob/master/example
 
+type AdaptiveColor struct {
+	Light color.Color
+	Dark  color.Color
+}
+
+func (c AdaptiveColor) Adapt(dark bool) color.Color {
+	if dark {
+		return c.Dark
+	}
+	return c.Light
+}
+
 var (
-	subtle    = lipgloss.AdaptiveColor{Light: "#D9DCCF", Dark: "#383838"}
-	highlight = lipgloss.AdaptiveColor{Light: "#874BFD", Dark: "#7D56F4"}
-	special   = lipgloss.AdaptiveColor{Light: "#43BF6D", Dark: "#73F59F"}
+	subtle    = AdaptiveColor{Light: lipgloss.Color("#D9DCCF"), Dark: lipgloss.Color("#383838")}
+	highlight = AdaptiveColor{Light: lipgloss.Color("#874BFD"), Dark: lipgloss.Color("#7D56F4")}
+	special   = AdaptiveColor{Light: lipgloss.Color("#43BF6D"), Dark: lipgloss.Color("#73F59F")}
+	completed = AdaptiveColor{Light: lipgloss.Color("#969B86"), Dark: lipgloss.Color("#696969")}
 )
 
 type model struct {
 	height int
 	width  int
+	dark   bool
 
-	tabs    tea.Model
-	dialog  tea.Model
-	list1   tea.Model
-	list2   tea.Model
-	history tea.Model
+	tabs    *tabs
+	dialog  *dialog
+	list1   *list
+	list2   *list
+	history *history
 }
 
 func (m model) Init() tea.Cmd {
-	return nil
+	return tea.RequestBackgroundColor
 }
 
 func (m model) isInitialized() bool {
@@ -43,13 +58,9 @@ func (m model) isInitialized() bool {
 }
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	if !m.isInitialized() {
-		if _, ok := msg.(tea.WindowSizeMsg); !ok {
-			return m, nil
-		}
-	}
-
 	switch msg := msg.(type) {
+	case tea.BackgroundColorMsg:
+		m.dark = msg.IsDark()
 	case tea.KeyMsg:
 		// Example of toggling mouse event tracking on/off.
 		if msg.String() == "ctrl+e" {
@@ -63,29 +74,29 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.WindowSizeMsg:
 		m.height = msg.Height
 		m.width = msg.Width
-		msg.Height -= 2
-		msg.Width -= 4
-		return m.propagate(msg), nil
 	}
 
-	return m.propagate(msg), nil
+	return m, m.propagate(msg) //nolint:gocritic
 }
 
-func (m *model) propagate(msg tea.Msg) tea.Model {
+func (m model) propagate(msg tea.Msg) tea.Cmd {
 	// Propagate to all children.
-	m.tabs, _ = m.tabs.Update(msg)
-	m.dialog, _ = m.dialog.Update(msg)
-	m.list1, _ = m.list1.Update(msg)
-	m.list2, _ = m.list2.Update(msg)
-
-	if msg, ok := msg.(tea.WindowSizeMsg); ok {
-		msg.Height -= m.tabs.(tabs).height + m.list1.(list).height
-		m.history, _ = m.history.Update(msg)
-		return m
+	cmds := []tea.Cmd{
+		m.tabs.Update(msg),
+		m.dialog.Update(msg),
+		m.list1.Update(msg),
+		m.list2.Update(msg),
 	}
 
-	m.history, _ = m.history.Update(msg)
-	return m
+	if msg, ok := msg.(tea.WindowSizeMsg); ok {
+		msg.Height -= m.tabs.GetHeight() +
+			max(m.list1.GetHeight(), m.list2.GetHeight(), m.dialog.GetHeight()) +
+			2 // +1 for bottom margin on tabs, +1 for top margin on history.
+
+		cmds = append(cmds, m.history.Update(msg))
+		return tea.Batch(cmds...)
+	}
+	return tea.Batch(append(cmds, m.history.Update(msg))...)
 }
 
 func (m model) View() string {
@@ -93,20 +104,22 @@ func (m model) View() string {
 		return ""
 	}
 
-	s := lipgloss.NewStyle().MaxHeight(m.height).MaxWidth(m.width).Padding(1, 2, 1, 2)
+	s := lipgloss.NewStyle().MaxHeight(m.height).MaxWidth(m.width)
 
-	return zone.Scan(s.Render(lipgloss.JoinVertical(lipgloss.Top,
-		m.tabs.View(), "",
-		lipgloss.PlaceHorizontal(
-			m.width, lipgloss.Center,
-			lipgloss.JoinHorizontal(
-				lipgloss.Top,
-				m.list1.View(), m.list2.View(), m.dialog.View(),
+	return zone.Scan(s.Render(
+		lipgloss.JoinVertical(lipgloss.Top,
+			lipgloss.NewStyle().MarginBottom(1).Render(m.tabs.View()),
+			lipgloss.PlaceHorizontal(
+				m.width, lipgloss.Center,
+				lipgloss.JoinHorizontal(
+					lipgloss.Top,
+					m.list1.View(), m.list2.View(), m.dialog.View(),
+				),
+				lipgloss.WithWhitespaceChars(" "),
 			),
-			lipgloss.WithWhitespaceChars(" "),
+			lipgloss.NewStyle().MarginTop(1).Render(m.history.View()),
 		),
-		m.history.View(),
-	)))
+	))
 }
 
 func main() {
@@ -117,20 +130,17 @@ func main() {
 	m := &model{
 		tabs: &tabs{
 			id:     zone.NewPrefix(), // Give each type an ID, so no zones will conflict.
-			height: 3,
 			active: "Lip Gloss",
 			items:  []string{"Lip Gloss", "Blush", "Eye Shadow", "Mascara", "Foundation"},
 		},
 		dialog: &dialog{
 			id:       zone.NewPrefix(),
-			height:   8,
 			active:   "confirm",
 			question: "Are you sure you want to eat marmalade?",
 		},
 		list1: &list{
-			id:     zone.NewPrefix(),
-			height: 8,
-			title:  "Citrus Fruits to Try",
+			id:    zone.NewPrefix(),
+			title: "Citrus Fruits to Try",
 			items: []listItem{
 				{name: "Grapefruit", done: true},
 				{name: "Yuzu", done: false},
@@ -140,9 +150,8 @@ func main() {
 			},
 		},
 		list2: &list{
-			id:     zone.NewPrefix(),
-			height: 8,
-			title:  "Actual Lip Gloss Vendors",
+			id:    zone.NewPrefix(),
+			title: "Actual Lip Gloss Vendors",
 			items: []listItem{
 				{name: "Glossier", done: true},
 				{name: "Claire's Boutique", done: true},
@@ -164,7 +173,7 @@ func main() {
 	p := tea.NewProgram(m, tea.WithAltScreen(), tea.WithMouseCellMotion())
 
 	if _, err := p.Run(); err != nil {
-		fmt.Println("error running program:", err)
+		fmt.Println("error running program:", err) //nolint:forbidigo
 		os.Exit(1)
 	}
 }
