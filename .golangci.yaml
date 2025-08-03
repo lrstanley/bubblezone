@@ -104,6 +104,7 @@ linters:
         - whyNoLint
         - hugeParam
         - ifElseChain
+        - singleCaseSwitch
       enabled-tags:
         - diagnostic
         - opinionated
