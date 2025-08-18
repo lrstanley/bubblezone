@@ -166,7 +166,7 @@ linters:
       packages:
         - github.com/jmoiron/sqlx
     sloglint:
-      no-global: all
+      no-global: default
       context: scope
     staticcheck:
       checks:
