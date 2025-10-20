@@ -48,8 +48,7 @@ linters:
     - gocognit # computes and checks the cognitive complexity of functions
     - goconst # finds repeated strings that could be replaced by a constant
     - gocritic # provides diagnostics that check for bugs, performance and style issues
-    # TODO: breaks multi-line comments when used with --fix: https://github.com/tetafro/godot/issues/39
-    # - godot # checks if comments end in a period
+    - godot # checks if comments end in a period
     - gomoddirectives # manages the use of 'replace', 'retract', and 'excludes' directives in go.mod
     - goprintffuncname # checks that printf-like functions are named with f at the end
     - gosec # inspects source code for security problems
@@ -128,16 +127,17 @@ linters:
               desc: Use github.com/google/uuid instead, satori's package is not maintained
             - pkg: github.com/gofrs/uuid$
               desc: Use github.com/gofrs/uuid/v5 or later, it was not a go module before v5
+            - pkg: github.com/lrstanley/clix$
+              desc: Use github.com/lrstanley/clix/v2 instead
+            - pkg: github.com/lrstanley/chix$
+              desc: Use github.com/lrstanley/chix/v2 instead
+            - pkg: log$
+              desc: Use log/slog instead, see https://go.dev/blog/slog
         "non-test files":
           files: ["!$test"]
           deny:
             - pkg: math/rand$
               desc: Use math/rand/v2 instead, see https://go.dev/blog/randv2
-        "non-main files":
-          files: ["!**/main.go"]
-          deny:
-            - pkg: log$
-              desc: Use log/slog instead, see https://go.dev/blog/slog
         "incorrect import":
           files: ["$test"]
           deny:
@@ -168,6 +168,12 @@ linters:
     sloglint:
       no-global: default
       context: scope
+      msg-style: lowercased
+      static-msg: true
+      forbidden-keys:
+        - time
+        - level
+        - source
     staticcheck:
       checks:
         - all
