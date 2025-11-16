@@ -4,7 +4,7 @@
 
 package zone
 
-import tea "github.com/charmbracelet/bubbletea/v2"
+import tea "charm.land/bubbletea/v2"
 
 // DefaultManager is an app-wide manager. To initialize it, call NewGlobal().
 var DefaultManager *Manager
