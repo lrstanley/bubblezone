@@ -48,10 +48,8 @@ var (
 )
 
 type tabs struct {
-	id    string
-	width int
-	dark  bool
-
+	id     string
+	width  int
 	active string
 	items  []string
 }
@@ -66,8 +64,6 @@ func (m *tabs) GetHeight() int {
 
 func (m *tabs) Update(msg tea.Msg) tea.Cmd { //nolint:unparam
 	switch msg := msg.(type) {
-	case tea.BackgroundColorMsg:
-		m.dark = msg.IsDark()
 	case tea.WindowSizeMsg:
 		m.width = msg.Width
 	case tea.MouseReleaseMsg:
@@ -91,21 +87,19 @@ func (m *tabs) Update(msg tea.Msg) tea.Cmd { //nolint:unparam
 func (m *tabs) View() string {
 	out := []string{}
 
-	color := highlight.Adapt(m.dark)
-
 	for _, item := range m.items {
 		// Make sure to mark each tab when rendering.
 		if item == m.active {
-			out = append(out, zone.Mark(m.id+item, activeTab.BorderForeground(color).Render(item)))
+			out = append(out, zone.Mark(m.id+item, activeTab.BorderForeground(highlight).Render(item)))
 		} else {
 			out = append(out, zone.Mark(
 				m.id+item,
-				tab.BorderForeground(color).Render(item)),
+				tab.BorderForeground(highlight).Render(item)),
 			)
 		}
 	}
 	row := lipgloss.JoinHorizontal(lipgloss.Top, out...)
-	gap := tabGap.BorderForeground(color).Render(strings.Repeat(" ", max(0, m.width-lipgloss.Width(row)-2)))
+	gap := tabGap.BorderForeground(highlight).Render(strings.Repeat(" ", max(0, m.width-lipgloss.Width(row)-2)))
 	row = lipgloss.JoinHorizontal(lipgloss.Bottom, row, gap)
 	return row
 }

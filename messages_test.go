@@ -5,20 +5,15 @@
 package zone
 
 import (
-	"sync"
 	"testing"
 	"time"
 
 	tea "charm.land/bubbletea/v2"
 )
 
-var (
-	_ tea.Model     = (*testModel)(nil)
-	_ tea.ViewModel = (*testModel)(nil)
-)
+var _ tea.Model = (*testModel)(nil)
 
 type testModel struct {
-	mu       sync.RWMutex
 	received []tea.Msg
 }
 
@@ -36,21 +31,18 @@ func (m *testModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		go AnyInBounds(m, msg)
 		return m, nil
 	case MsgZoneInBounds:
-		m.mu.Lock()
 		m.received = append(m.received, msg)
-		m.mu.Unlock()
 	}
 	return m, nil
 }
 
-func (m *testModel) View() string {
-	// Starts at X:4, Y:2, ends at X:12, Y:3.
-	return "test\nfoo\naaa " + Mark("foo", "bar\ntest123456789") + " aaa\nbaz"
+func (m *testModel) View() tea.View {
+	return tea.NewView(Scan("test\nfoo\naaa " + Mark("foo", "bar\ntest123456789") + " aaa\nbaz"))
 }
 
 func TestAnyInBounds(t *testing.T) {
 	m := newTestModel()
-	_ = Scan(m.View())
+	_ = m.View()
 	time.Sleep(100 * time.Millisecond)
 	xy := Get("foo")
 	if xy.IsZero() {
@@ -61,8 +53,6 @@ func TestAnyInBounds(t *testing.T) {
 	time.Sleep(100 * time.Millisecond)
 
 	var contains bool
-	m.mu.RLock()
-	defer m.mu.RUnlock()
 	for _, msg := range m.received {
 		if evt, ok := msg.(MsgZoneInBounds); ok {
 			if evt.Zone.id == xy.id {
@@ -77,13 +67,9 @@ func TestAnyInBounds(t *testing.T) {
 	}
 }
 
-var (
-	_ tea.Model     = (*testModelValue)(nil)
-	_ tea.ViewModel = (*testModelValue)(nil)
-)
+var _ tea.Model = (*testModelValue)(nil)
 
 type testModelValue struct {
-	mu       sync.RWMutex
 	received []tea.Msg
 }
 
@@ -96,22 +82,19 @@ func (m testModelValue) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	case tea.MouseMsg:
 		return AnyInBoundsAndUpdate(m, msg)
 	case MsgZoneInBounds:
-		m.mu.Lock()
 		m.received = append(m.received, msg)
-		m.mu.Unlock()
 	}
 	return m, nil
 }
 
-func (m testModelValue) View() string {
-	// Starts at X:4, Y:2, ends at X:12, Y:3.
-	return "test\nfoo\naaa " + Mark("foo", "bar\ntest123456789") + " aaa\nbaz"
+func (m testModelValue) View() tea.View {
+	return tea.NewView(Scan("test\nfoo\naaa " + Mark("foo", "bar\ntest123456789") + " aaa\nbaz"))
 }
 
 func TestAnyInBoundsAndUpdate(t *testing.T) {
 	m := testModelValue{}
 
-	_ = Scan(m.View())
+	_ = m.View()
 	time.Sleep(100 * time.Millisecond)
 	xy := Get("foo")
 	if xy.IsZero() {
@@ -123,8 +106,7 @@ func TestAnyInBoundsAndUpdate(t *testing.T) {
 	time.Sleep(100 * time.Millisecond)
 
 	var contains bool
-	m.mu.RLock()
-	defer m.mu.RUnlock()
+
 	for _, msg := range m.received {
 		if evt, ok := msg.(MsgZoneInBounds); ok {
 			if evt.Zone.id == xy.id {

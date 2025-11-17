@@ -6,7 +6,6 @@ package main
 
 import (
 	"fmt"
-	"image/color"
 	"os"
 
 	tea "charm.land/bubbletea/v2"
@@ -18,29 +17,16 @@ import (
 // resizing, and clickable models (tabs, lists, dialogs, etc).
 // 	https://github.com/charmbracelet/lipgloss/blob/master/example
 
-type AdaptiveColor struct {
-	Light color.Color
-	Dark  color.Color
-}
-
-func (c AdaptiveColor) Adapt(dark bool) color.Color {
-	if dark {
-		return c.Dark
-	}
-	return c.Light
-}
-
 var (
-	subtle    = AdaptiveColor{Light: lipgloss.Color("#D9DCCF"), Dark: lipgloss.Color("#383838")}
-	highlight = AdaptiveColor{Light: lipgloss.Color("#874BFD"), Dark: lipgloss.Color("#7D56F4")}
-	special   = AdaptiveColor{Light: lipgloss.Color("#43BF6D"), Dark: lipgloss.Color("#73F59F")}
-	completed = AdaptiveColor{Light: lipgloss.Color("#969B86"), Dark: lipgloss.Color("#696969")}
+	subtle    = lipgloss.Color("#383838")
+	highlight = lipgloss.Color("#7D56F4")
+	special   = lipgloss.Color("#73F59F")
+	completed = lipgloss.Color("#696969")
 )
 
 type model struct {
 	height int
 	width  int
-	dark   bool
 
 	tabs    *tabs
 	dialog  *dialog
@@ -50,7 +36,7 @@ type model struct {
 }
 
 func (m model) Init() tea.Cmd {
-	return tea.RequestBackgroundColor
+	return nil
 }
 
 func (m model) isInitialized() bool {
@@ -59,8 +45,6 @@ func (m model) isInitialized() bool {
 
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
-	case tea.BackgroundColorMsg:
-		m.dark = msg.IsDark()
 	case tea.KeyMsg:
 		// Example of toggling mouse event tracking on/off.
 		if msg.String() == "ctrl+e" {
@@ -99,14 +83,19 @@ func (m model) propagate(msg tea.Msg) tea.Cmd {
 	return tea.Batch(append(cmds, m.history.Update(msg))...)
 }
 
-func (m model) View() string {
+func (m model) View() tea.View {
+	var view tea.View
+	view.AltScreen = true
+	view.MouseMode = tea.MouseModeCellMotion
+
 	if !m.isInitialized() {
-		return ""
+		return view
 	}
 
 	s := lipgloss.NewStyle().MaxHeight(m.height).MaxWidth(m.width)
 
-	return zone.Scan(s.Render(
+	// Wrap the main models view in [zone.Scan].
+	view.SetContent(zone.Scan(s.Render(
 		lipgloss.JoinVertical(lipgloss.Top,
 			lipgloss.NewStyle().MarginBottom(1).Render(m.tabs.View()),
 			lipgloss.PlaceHorizontal(
@@ -119,7 +108,8 @@ func (m model) View() string {
 			),
 			lipgloss.NewStyle().MarginTop(1).Render(m.history.View()),
 		),
-	))
+	)))
+	return view
 }
 
 func main() {
@@ -170,7 +160,7 @@ func main() {
 		},
 	}
 
-	p := tea.NewProgram(m, tea.WithAltScreen(), tea.WithMouseCellMotion())
+	p := tea.NewProgram(m)
 
 	if _, err := p.Run(); err != nil {
 		fmt.Println("error running program:", err) //nolint:forbidigo
