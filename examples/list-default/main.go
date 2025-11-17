@@ -8,10 +8,10 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/charmbracelet/bubbles/list"
-	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
-	zone "github.com/lrstanley/bubblezone"
+	"charm.land/bubbles/v2/list"
+	tea "charm.land/bubbletea/v2"
+	"charm.land/lipgloss/v2"
+	zone "github.com/lrstanley/bubblezone/v2"
 )
 
 // This is a modified version of this example, to support mouse click zones and
@@ -48,17 +48,20 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		h, v := docStyle.GetFrameSize()
 		m.list.SetSize(msg.Width-h, msg.Height-v)
 	case tea.MouseMsg:
-		if msg.Button == tea.MouseButtonWheelUp {
-			m.list.CursorUp()
-			return m, nil
-		}
-
-		if msg.Button == tea.MouseButtonWheelDown {
-			m.list.CursorDown()
-			return m, nil
-		}
-
-		if msg.Action == tea.MouseActionRelease && msg.Button == tea.MouseButtonLeft {
+		switch msg := msg.(type) {
+		case tea.MouseWheelMsg:
+			switch msg.Button {
+			case tea.MouseWheelUp:
+				m.list.CursorUp()
+				return m, nil
+			case tea.MouseWheelDown:
+				m.list.CursorDown()
+				return m, nil
+			}
+		case tea.MouseReleaseMsg:
+			if msg.Button != tea.MouseLeft {
+				break
+			}
 			for i, listItem := range m.list.VisibleItems() {
 				v, _ := listItem.(item)
 				// Check each item to see if it's in bounds.
@@ -78,9 +81,14 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, cmd
 }
 
-func (m model) View() string {
-	// Wrap the main models view in zone.Scan.
-	return zone.Scan(docStyle.Render(m.list.View()))
+func (m model) View() tea.View {
+	var view tea.View
+	view.AltScreen = true
+	view.MouseMode = tea.MouseModeCellMotion
+
+	// Wrap the main models view in [zone.Scan].
+	view.SetContent(zone.Scan(docStyle.Render(m.list.View())))
+	return view
 }
 
 func main() {
@@ -119,10 +127,10 @@ func main() {
 	m := model{list: list.New(items, list.NewDefaultDelegate(), 0, 0)}
 	m.list.Title = "Left click on an items title to select it"
 
-	p := tea.NewProgram(m, tea.WithAltScreen(), tea.WithMouseCellMotion())
+	p := tea.NewProgram(m)
 
 	if _, err := p.Run(); err != nil {
-		fmt.Println("error running program:", err)
+		fmt.Println("error running program:", err) //nolint:forbidigo
 		os.Exit(1)
 	}
 }
