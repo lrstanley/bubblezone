@@ -2,11 +2,11 @@ name: test
 
 on:
   pull_request:
-    branches: [master]
+    branches: [master, v2-exp]
     paths-ignore: [".gitignore", "**/*.md", ".github/ISSUE_TEMPLATE/**"]
     types: [opened, edited, reopened, synchronize, unlocked]
   push:
-    branches: [master]
+    branches: [master, v2-exp]
     paths-ignore: [".gitignore", "**/*.md", ".github/ISSUE_TEMPLATE/**"]
 
 jobs:
