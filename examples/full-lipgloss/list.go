@@ -5,8 +5,8 @@
 package main
 
 import (
-	tea "github.com/charmbracelet/bubbletea/v2"
-	"github.com/charmbracelet/lipgloss/v2"
+	tea "charm.land/bubbletea/v2"
+	"charm.land/lipgloss/v2"
 	zone "github.com/lrstanley/bubblezone/v2"
 )
 
@@ -38,7 +38,6 @@ type listItem struct {
 
 type list struct {
 	id    string
-	dark  bool
 	title string
 	items []listItem
 }
@@ -53,8 +52,6 @@ func (m *list) GetHeight() int {
 
 func (m *list) Update(msg tea.Msg) tea.Cmd { //nolint:unparam
 	switch msg := msg.(type) {
-	case tea.BackgroundColorMsg:
-		m.dark = msg.IsDark()
 	case tea.MouseReleaseMsg:
 		if msg.Button != tea.MouseLeft {
 			return nil
@@ -74,14 +71,14 @@ func (m *list) Update(msg tea.Msg) tea.Cmd { //nolint:unparam
 }
 
 func (m *list) View() string {
-	out := []string{listHeader.BorderForeground(subtle.Adapt(m.dark)).Render(m.title)}
+	out := []string{listHeader.BorderForeground(subtle).Render(m.title)}
 
 	for _, item := range m.items {
 		if item.done {
 			out = append(out, zone.Mark(
 				m.id+item.name,
-				checkMark.Foreground(special.Adapt(m.dark)).String()+
-					listDoneStyle.Foreground(completed.Adapt(m.dark)).Render(item.name),
+				checkMark.Foreground(special).String()+
+					listDoneStyle.Foreground(completed).Render(item.name),
 			))
 			continue
 		}
@@ -89,7 +86,7 @@ func (m *list) View() string {
 		out = append(out, zone.Mark(m.id+item.name, listItemStyle.Render(item.name)))
 	}
 
-	return listStyle.BorderForeground(subtle.Adapt(m.dark)).Render(
+	return listStyle.BorderForeground(subtle).Render(
 		lipgloss.JoinVertical(lipgloss.Left, out...),
 	)
 }

@@ -4,7 +4,7 @@
 
 package zone
 
-import tea "github.com/charmbracelet/bubbletea/v2"
+import tea "charm.land/bubbletea/v2"
 
 // ZoneInfo holds information about the start and end positions of a zone.
 type ZoneInfo struct { // nolint:revive

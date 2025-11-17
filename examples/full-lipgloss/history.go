@@ -5,8 +5,8 @@
 package main
 
 import (
-	tea "github.com/charmbracelet/bubbletea/v2"
-	"github.com/charmbracelet/lipgloss/v2"
+	tea "charm.land/bubbletea/v2"
+	"charm.land/lipgloss/v2"
 	zone "github.com/lrstanley/bubblezone/v2"
 )
 
@@ -14,7 +14,6 @@ type history struct {
 	id     string
 	height int
 	width  int
-	dark   bool
 
 	active string
 	items  []string
@@ -29,8 +28,6 @@ func (m *history) Update(msg tea.Msg) tea.Cmd { //nolint:unparam
 	case tea.WindowSizeMsg:
 		m.height = msg.Height
 		m.width = msg.Width
-	case tea.BackgroundColorMsg:
-		m.dark = msg.IsDark()
 	case tea.MouseReleaseMsg:
 		if msg.Button != tea.MouseLeft {
 			return nil
@@ -51,7 +48,7 @@ func (m *history) View() string {
 	historyStyle := lipgloss.NewStyle().
 		Align(lipgloss.Left).
 		Foreground(lipgloss.Color("#FAFAFA")).
-		Background(subtle.Adapt(m.dark)).
+		Background(subtle).
 		Margin(0, 1).
 		Padding(1, 2).
 		Width((m.width / len(m.items)) - 2).
@@ -63,7 +60,7 @@ func (m *history) View() string {
 	for _, item := range m.items {
 		if item == m.active {
 			// Customize the active item.
-			out = append(out, zone.Mark(m.id+item, historyStyle.Background(highlight.Adapt(m.dark)).Render(item)))
+			out = append(out, zone.Mark(m.id+item, historyStyle.Background(highlight).Render(item)))
 		} else {
 			// Make sure to mark all zones.
 			out = append(out, zone.Mark(m.id+item, historyStyle.Render(item)))

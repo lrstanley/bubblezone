@@ -8,9 +8,9 @@ import (
 	"fmt"
 	"os"
 
-	"github.com/charmbracelet/bubbles/v2/list"
-	tea "github.com/charmbracelet/bubbletea/v2"
-	"github.com/charmbracelet/lipgloss/v2"
+	"charm.land/bubbles/v2/list"
+	tea "charm.land/bubbletea/v2"
+	"charm.land/lipgloss/v2"
 	zone "github.com/lrstanley/bubblezone/v2"
 )
 
@@ -81,9 +81,14 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	return m, cmd
 }
 
-func (m model) View() string {
-	// Wrap the main models view in zone.Scan.
-	return zone.Scan(docStyle.Render(m.list.View()))
+func (m model) View() tea.View {
+	var view tea.View
+	view.AltScreen = true
+	view.MouseMode = tea.MouseModeCellMotion
+
+	// Wrap the main models view in [zone.Scan].
+	view.SetContent(zone.Scan(docStyle.Render(m.list.View())))
+	return view
 }
 
 func main() {
@@ -122,7 +127,7 @@ func main() {
 	m := model{list: list.New(items, list.NewDefaultDelegate(), 0, 0)}
 	m.list.Title = "Left click on an items title to select it"
 
-	p := tea.NewProgram(m, tea.WithAltScreen(), tea.WithMouseCellMotion())
+	p := tea.NewProgram(m)
 
 	if _, err := p.Run(); err != nil {
 		fmt.Println("error running program:", err) //nolint:forbidigo

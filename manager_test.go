@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/charmbracelet/lipgloss/v2"
+	"charm.land/lipgloss/v2"
 )
 
 func TestMain(m *testing.M) {
