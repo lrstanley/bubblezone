@@ -23,7 +23,6 @@
   </a>
 
 
-
   <a href="https://codecov.io/gh/lrstanley/bubblezone">
     <img title="Code Coverage" src="https://img.shields.io/codecov/c/github/lrstanley/bubblezone/master?style=flat-square">
   </a>
