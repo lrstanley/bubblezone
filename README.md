@@ -125,7 +125,7 @@ where the mouse was being clicked, and which component was under the mouse:
 <!-- template:begin:goget -->
 <!-- do not edit anything in this "template" block, its auto-generated -->
 ```console
-go get -u github.com/lrstanley/bubblezone@latest
+go get -u github.com/lrstanley/bubblezone/v2@latest
 ```
 <!-- template:end:goget -->
 
@@ -140,7 +140,7 @@ package main
 
 import (
 	// [...]
-	zone "github.com/lrstanley/bubblezone"
+	zone "github.com/lrstanley/bubblezone/v2"
 )
 
 
@@ -157,23 +157,19 @@ func main() {
 }
 ```
 
-Ensure the mouse is enabled and the program is running in alt screen mode (i.e. full window mode).
-
-```go
-func main() {
-	// [...]
-	p := tea.NewProgram(m, tea.WithAltScreen(), tea.WithMouseCellMotion())
-	// [...]
-}
-```
-
 In your root model, wrap your `View()` output in `zone.Scan()`, which will register
 and monitor all zones, including stripping the ANSI sequences injected by `zone.Mark()`.
 
 ```go
-func (r app) View() string {
-	// [...]
-	return zone.Scan(r.someStyle.Render(generatedChildViews))
+func (r app) View() tea.View {
+    var view tea.View
+    // Ensure that alt-screen is enabled, as bubblezone will only work in alt-screen mode.
+    view.AltScreen = true
+    // Enable mouse motion tracking.
+    view.MouseMode = tea.MouseModeCellMotion
+    // Wrap view in [zone.Scan].
+    view.SetContent(zone.Scan(r.someStyle.Render(generatedChildViews)))
+	return view
 }
 ```
 
@@ -199,8 +195,8 @@ check if the mouse event was in the bounds of the zone:
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	// [...]
-	case tea.MouseMsg:
-		if msg.Action != tea.MouseActionRelease || msg.Button != tea.MouseButtonLeft {
+	case tea.MouseReleaseMsg:
+		if msg.Button != tea.MouseLeft {
 			return m, nil
 		}
 

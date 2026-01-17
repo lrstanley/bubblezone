@@ -5,9 +5,9 @@
 package main
 
 import (
-	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
-	zone "github.com/lrstanley/bubblezone"
+	tea "charm.land/bubbletea/v2"
+	"charm.land/lipgloss/v2"
+	zone "github.com/lrstanley/bubblezone/v2"
 )
 
 type history struct {
@@ -19,18 +19,18 @@ type history struct {
 	items  []string
 }
 
-func (m history) Init() tea.Cmd {
+func (m *history) Init() tea.Cmd {
 	return nil
 }
 
-func (m history) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m *history) Update(msg tea.Msg) tea.Cmd { //nolint:unparam
 	switch msg := msg.(type) {
 	case tea.WindowSizeMsg:
 		m.height = msg.Height
 		m.width = msg.Width
-	case tea.MouseMsg:
-		if msg.Action != tea.MouseActionRelease || msg.Button != tea.MouseButtonLeft {
-			return m, nil
+	case tea.MouseReleaseMsg:
+		if msg.Button != tea.MouseLeft {
+			return nil
 		}
 
 		for _, item := range m.items {
@@ -41,18 +41,18 @@ func (m history) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		}
 	}
-	return m, nil
+	return nil
 }
 
-func (m history) View() string {
+func (m *history) View() string {
 	historyStyle := lipgloss.NewStyle().
 		Align(lipgloss.Left).
 		Foreground(lipgloss.Color("#FAFAFA")).
 		Background(subtle).
-		Margin(1).
+		Margin(0, 1).
 		Padding(1, 2).
 		Width((m.width / len(m.items)) - 2).
-		Height(m.height - 2).
+		Height(m.height).
 		MaxHeight(m.height)
 
 	out := []string{}

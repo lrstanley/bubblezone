@@ -5,37 +5,30 @@
 package main
 
 import (
-	tea "github.com/charmbracelet/bubbletea"
-	"github.com/charmbracelet/lipgloss"
-	zone "github.com/lrstanley/bubblezone"
+	tea "charm.land/bubbletea/v2"
+	"charm.land/lipgloss/v2"
+	zone "github.com/lrstanley/bubblezone/v2"
 )
 
 var (
 	listStyle = lipgloss.NewStyle().
 			Border(lipgloss.NormalBorder(), false, true, false, false).
-			BorderForeground(subtle).
 			MarginRight(2)
 
 	listHeader = lipgloss.NewStyle().
 			BorderStyle(lipgloss.NormalBorder()).
 			BorderBottom(true).
-			BorderForeground(subtle).
-			MarginRight(2).
-			Render
+			MarginRight(2)
 
-	listItemStyle = lipgloss.NewStyle().PaddingLeft(2).Render
+	listItemStyle = lipgloss.NewStyle().
+			PaddingLeft(2)
 
-	checkMark = lipgloss.NewStyle().SetString("✓").
-			Foreground(special).
-			PaddingRight(1).
-			String()
+	checkMark = lipgloss.NewStyle().
+			SetString("✓").
+			PaddingRight(1)
 
-	listDoneStyle = func(s string) string {
-		return checkMark + lipgloss.NewStyle().
-			Strikethrough(true).
-			Foreground(lipgloss.AdaptiveColor{Light: "#969B86", Dark: "#696969"}).
-			Render(s)
-	}
+	listDoneStyle = lipgloss.NewStyle().
+			Strikethrough(true)
 )
 
 type listItem struct {
@@ -44,25 +37,24 @@ type listItem struct {
 }
 
 type list struct {
-	id     string
-	height int
-	width  int
-
+	id    string
 	title string
 	items []listItem
 }
 
-func (m list) Init() tea.Cmd {
+func (m *list) Init() tea.Cmd {
 	return nil
 }
 
-func (m list) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+func (m *list) GetHeight() int {
+	return lipgloss.Height(m.View())
+}
+
+func (m *list) Update(msg tea.Msg) tea.Cmd { //nolint:unparam
 	switch msg := msg.(type) {
-	case tea.WindowSizeMsg:
-		m.width = msg.Width
-	case tea.MouseMsg:
-		if msg.Action != tea.MouseActionRelease || msg.Button != tea.MouseButtonLeft {
-			return m, nil
+	case tea.MouseReleaseMsg:
+		if msg.Button != tea.MouseLeft {
+			return nil
 		}
 
 		for i, item := range m.items {
@@ -73,24 +65,28 @@ func (m list) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		}
 
-		return m, nil
+		return nil
 	}
-	return m, nil
+	return nil
 }
 
-func (m list) View() string {
-	out := []string{listHeader(m.title)}
+func (m *list) View() string {
+	out := []string{listHeader.BorderForeground(subtle).Render(m.title)}
 
 	for _, item := range m.items {
 		if item.done {
-			out = append(out, zone.Mark(m.id+item.name, listDoneStyle(item.name)))
+			out = append(out, zone.Mark(
+				m.id+item.name,
+				checkMark.Foreground(special).String()+
+					listDoneStyle.Foreground(completed).Render(item.name),
+			))
 			continue
 		}
 
-		out = append(out, zone.Mark(m.id+item.name, listItemStyle(item.name)))
+		out = append(out, zone.Mark(m.id+item.name, listItemStyle.Render(item.name)))
 	}
 
-	return listStyle.Render(
+	return listStyle.BorderForeground(subtle).Render(
 		lipgloss.JoinVertical(lipgloss.Left, out...),
 	)
 }

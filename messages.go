@@ -7,7 +7,7 @@ package zone
 import (
 	"sort"
 
-	tea "github.com/charmbracelet/bubbletea"
+	tea "charm.land/bubbletea/v2"
 )
 
 // MsgZoneInBounds is a message sent when the manager detects that a zone is within
