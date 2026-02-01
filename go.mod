@@ -2,7 +2,7 @@ module github.com/lrstanley/bubblezone
 
 go 1.23.0
 
-toolchain go1.24.2
+toolchain go1.25.6
 
 require (
 	github.com/charmbracelet/bubbletea v1.3.4
