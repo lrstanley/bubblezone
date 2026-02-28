@@ -15,10 +15,13 @@ var _ tea.Model = (*testModel)(nil)
 
 type testModel struct {
 	received []tea.Msg
+	done     chan struct{} // closed when MsgZoneInBounds has been received (for test sync)
 }
 
 func newTestModel() *testModel {
-	return &testModel{}
+	return &testModel{
+		done: make(chan struct{}),
+	}
 }
 
 func (m *testModel) Init() tea.Cmd {
@@ -32,6 +35,10 @@ func (m *testModel) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m, nil
 	case MsgZoneInBounds:
 		m.received = append(m.received, msg)
+		select {
+		case m.done <- struct{}{}:
+		default:
+		}
 	}
 	return m, nil
 }
@@ -50,7 +57,7 @@ func TestAnyInBounds(t *testing.T) {
 	}
 
 	_, _ = m.Update(tea.MouseMotionMsg{X: 4, Y: 2})
-	time.Sleep(100 * time.Millisecond)
+	<-m.done // wait for async AnyInBounds to deliver MsgZoneInBounds before reading m.received
 
 	var contains bool
 	for _, msg := range m.received {
