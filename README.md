@@ -3,7 +3,7 @@
   "nodescription": true
 }
 -->
-<img title="Logo" src="./examples/_images/logo.png" width="961">
+<img title="Logo" src="./_examples/_images/logo.png" width="961">
 
 <!-- template:begin:header -->
 <!-- do not edit anything in this "template" block, its auto-generated -->
@@ -123,12 +123,9 @@ where the mouse was being clicked, and which component was under the mouse:
 
 ## :gear: Usage
 
-<!-- template:begin:goget -->
-<!-- do not edit anything in this "template" block, its auto-generated -->
 ```console
 go get -u github.com/lrstanley/bubblezone/v2@latest
 ```
-<!-- template:end:goget -->
 
 BubbleZone supports either a global zone manager (initialized via `NewGlobal()`),
 or non-global (via `New()`). Using the global zone manager, simply use `zone.<method>`.
@@ -228,7 +225,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 ### List example
 
 - All titles are marked as a unique zone, and upon left click, that item is focused.
-- [Example source](./examples/list-default/main.go).
+- [Example source](./_examples/list-default/main.go).
 
 ![list-default example](https://cdn.liam.sh/share/2022/07/WindowsTerminal_SelC1Vzdas.gif)
 
@@ -237,7 +234,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 - All items are marked as a unique zone (uses `NewPrefix()` as well).
 - Child models are used, and the resulting mouse events are passed down to each
   model.
-- [Example source](./examples/full-lipgloss).
+- [Example source](./_examples/full-lipgloss).
 
 ![full-lipgloss example](https://cdn.liam.sh/share/2022/07/WindowsTerminal_tirP0rGZ2z.gif)
 
@@ -302,6 +299,21 @@ Example:
      guidelines for tips on how to ask the right questions.
 * :lady_beetle: For all features/bugs/issues/questions/etc, [head over here](https://github.com/lrstanley/bubblezone/issues/new/choose).
 <!-- template:end:support -->
+
+---
+
+## :rocket: Changes in v2
+
+> [!CAUTION]
+> bubblezone v2 may not work when using the lipgloss v2 canvas/compositor. lipgloss/bubbletea
+> v2 have some more native features for mouse event tracking. That said, I do plan
+> to release another library that covers advanced layouts/layering/etc with improved
+> mouse event tracking (that's even better than bubblezone).
+
+- Switch the following deps to v2 variants (breaking change):
+  - `charm.land/bubbletea/v2`
+  - `charm.land/lipgloss/v2`
+  - replaced `github.com/muesli/ansi` with `github.com/mattn/go-runewidth` to reduce dependency count.
 
 <!-- template:begin:contributing -->
 <!-- do not edit anything in this "template" block, its auto-generated -->
