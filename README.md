@@ -31,9 +31,6 @@
   <a href="https://pkg.go.dev/github.com/lrstanley/bubblezone/v2">
     <img title="Go Documentation" src="https://pkg.go.dev/badge/github.com/lrstanley/bubblezone/v2?style=flat-square">
   </a>
-  <a href="https://goreportcard.com/report/github.com/lrstanley/bubblezone/v2">
-    <img title="Go Report Card" src="https://goreportcard.com/badge/github.com/lrstanley/bubblezone/v2?style=flat-square">
-  </a>
 </p>
 <p align="center">
   <a href="https://github.com/lrstanley/bubblezone/issues?q=is:open+is:issue+label:bug">
