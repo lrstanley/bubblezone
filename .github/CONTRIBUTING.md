@@ -87,14 +87,6 @@ Below are a few guidelines if you would like to contribute:
   files. This should be available for any editor that supports `gopls`, however
   you can also run it locally with `golangci-lint run` after installing it.
 
-
-
-
-
-
-
-
-
 ## :clipboard: References
 
 - [Open Source: How to Contribute](https://opensource.guide/how-to-contribute/)
